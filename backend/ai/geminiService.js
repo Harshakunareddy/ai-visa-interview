@@ -15,7 +15,12 @@ const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 const OPENAI_MODEL = 'gpt-4o-mini';
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL = 'llama-3.1-8b-instant';
+const GROQ_MODELS = [
+    'llama-3.1-8b-instant',
+    'llama-3.3-70b-versatile',
+    'mixtral-8x7b-32768',
+    'gemma2-9b-it'
+];
 
 // ── Provider detection ─────────────────────────────────────────────────────────
 const getProvider = () => {
@@ -62,9 +67,15 @@ const callOpenAI = async (messages, maxTokens = 1024) => {
 };
 
 // ── Groq call ──────────────────────────────────────────────────────────────────
-const callGroq = async (messages, maxTokens = 1024) => {
+const callGroq = async (messages, maxTokens = 1024, modelIndex = 0) => {
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) throw new Error('GROQ_API_KEY is not set. Configure it in /setup → AI Provider.');
+
+    if (modelIndex >= GROQ_MODELS.length) {
+        throw new Error('Groq error: All fallback models exhausted due to rate limits.');
+    }
+
+    const currentModel = GROQ_MODELS[modelIndex];
 
     const response = await fetch(GROQ_URL, {
         method: 'POST',
@@ -73,7 +84,7 @@ const callGroq = async (messages, maxTokens = 1024) => {
             'Authorization': `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-            model: GROQ_MODEL,
+            model: currentModel,
             messages,
             max_tokens: maxTokens,
             temperature: 0.7,
@@ -81,8 +92,14 @@ const callGroq = async (messages, maxTokens = 1024) => {
     });
 
     if (!response.ok) {
+        const status = response.status;
+        if (status === 429 && modelIndex < GROQ_MODELS.length - 1) {
+            logger.warn(`⏳ Groq model ${currentModel} rate limited. Falling back to ${GROQ_MODELS[modelIndex + 1]}...`);
+            return callGroq(messages, maxTokens, modelIndex + 1);
+        }
+
         const err = await response.json().catch(() => ({}));
-        throw new Error(`Groq error ${response.status}: ${err.error?.message || 'Unknown error'}`);
+        throw new Error(`Groq error ${status}: ${err.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();
@@ -98,7 +115,7 @@ const dispatch = async (messages, maxTokens = 1024) => {
     }
 
     if (provider === 'groq') {
-        logger.info(`🤖 Using Groq (${GROQ_MODEL})`);
+        logger.info(`🤖 Using Groq`);
         return callGroq(messages, maxTokens);
     }
 
@@ -157,7 +174,7 @@ const generateStream = async (prompt, onChunk) => {
         if (!provider) throw new Error('No AI provider configured.');
 
         const url = provider === 'groq' ? GROQ_URL : OPENAI_URL;
-        const model = provider === 'groq' ? GROQ_MODEL : OPENAI_MODEL;
+        const model = provider === 'groq' ? GROQ_MODELS[0] : OPENAI_MODEL;
         const apiKey = provider === 'groq' ? process.env.GROQ_API_KEY : process.env.OPENAI_API_KEY;
 
         const response = await fetch(url, {
@@ -228,7 +245,7 @@ const createChatSession = (history = []) => {
             if (!provider) throw new Error('No AI provider configured.');
 
             const url = provider === 'groq' ? GROQ_URL : OPENAI_URL;
-            const model = provider === 'groq' ? GROQ_MODEL : OPENAI_MODEL;
+            const model = provider === 'groq' ? GROQ_MODELS[0] : OPENAI_MODEL;
             const apiKey = provider === 'groq' ? process.env.GROQ_API_KEY : process.env.OPENAI_API_KEY;
 
             const response = await fetch(url, {
