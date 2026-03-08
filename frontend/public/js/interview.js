@@ -274,6 +274,7 @@ function initSpeechRecognition() {
             answerTextarea.value += final;
             updateWordCount();
         }
+        window._lastInterim = interim; // Save interim to capture it if user stops/submits
         if (interim) speechStatus.textContent = '🎙️ ' + interim;
     };
     recognition.onerror = (e) => {
@@ -303,19 +304,27 @@ function updateWordCount() {
  */
 function normalizeTranscript(text) {
     return text
-        .replace(/\b(um+|uh+|hmm+|err+|ah+|like,?|you know,?)\b/gi, '') // filler words
-        .replace(/\s{2,}/g, ' ')  // collapse extra spaces
-        .replace(/^[\s,]+|[\s,]+$/g, '') // trim leading/trailing commas & spaces
+        .replace(/\b(um+|uh+|hmm+|err+|ah+)\b/gi, '') // removed "like" and "you know" as they could be part of actual answers
+        .replace(/\s{2,}/g, ' ')  
+        .replace(/^[\s,]+|[\s,]+$/g, '') 
         .trim();
 }
 
 // ── Submit Answer ─────────────────────────────────────────────
 async function submitAnswer() {
-    if (isSubmitting) return; // Prevent overlapping requests
+    if (isSubmitting) return; 
+
+    // Capture any pending interim speech results before finishing
+    if (window._lastInterim) {
+        answerTextarea.value += window._lastInterim + ' ';
+        window._lastInterim = '';
+        updateWordCount();
+    }
     
     const answer = normalizeTranscript(answerTextarea.value.trim());
     if (!answer) { 
         speechStatus.textContent = '⚠️ Please provide an answer'; 
+        isSubmitting = false;
         return; 
     }
 

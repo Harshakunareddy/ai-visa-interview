@@ -211,10 +211,13 @@
                             <div class="res-qa-head">
                                 <div class="res-qa-num-wrap">
                                     <span class="res-qa-num">Q<%= qi + 1 %></span>
+                                    <% if (typeof isDemo === 'undefined' || !isDemo) { %>
                                     <span class="res-qa-score-badge res-badge-<%= scoreClass %>">
                                         <%= avgScore %>/10
                                     </span>
+                                    <% } %>
                                 </div>
+                                <% if (typeof isDemo === 'undefined' || !isDemo) { %>
                                 <div class="res-qa-mini-scores">
                                     <span class="res-mini-score">Relevance: <strong>
                                             <%= rel %>/10
@@ -223,6 +226,7 @@
                                             <%= cred %>/10
                                         </strong></span>
                                 </div>
+                                <% } %>
                             </div>
                             <div class="res-qa-body">
                                 <div class="res-qa-question">
