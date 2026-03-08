@@ -5,7 +5,7 @@
  *
  * Supported providers:
  *   - openai  → gpt-4o-mini  (OpenAI API)
- *   - groq    → llama-3.3-70b-versatile  (Groq — 14,400 req/day free)
+ *   - groq    → llama-3.1-8b-instant  (Groq)
  */
 'use strict';
 
@@ -15,7 +15,7 @@ const OPENAI_URL = 'https://api.openai.com/v1/chat/completions';
 const OPENAI_MODEL = 'gpt-4o-mini';
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_MODEL = 'llama-3.3-70b-versatile';
+const GROQ_MODEL = 'llama-3.1-8b-instant';
 
 // ── Provider detection ─────────────────────────────────────────────────────────
 const getProvider = () => {
