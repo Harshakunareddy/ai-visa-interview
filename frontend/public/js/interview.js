@@ -76,8 +76,8 @@ updateVoices();
 
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
-    sessionInfo.textContent = `${targetCountry} · ${visaType} Visa`;
-    officerCountry.textContent = `${targetCountry} Embassy`;
+    if (sessionInfo) sessionInfo.textContent = `${targetCountry || 'Demo'} · ${visaType || 'Visa'}`;
+    if (officerCountry) officerCountry.textContent = `${targetCountry || 'Demo'} Embassy`;
 
     // Start camera
     try {
@@ -292,7 +292,7 @@ function toggleMic() {
 
 function updateWordCount() {
     const count = answerTextarea.value.trim().split(/\s+/).filter(Boolean).length;
-    wordCount.textContent = `${count} words`;
+    if (wordCount) wordCount.textContent = `${count} words`;
 }
 
 // ── Speech Transcript Cleaner ─────────────────────────────────
@@ -478,8 +478,8 @@ function startCanvasEyeTracking() {
             eyeScoreAvg = Math.round(eyeScoreAvg * 0.7 + centeredness * 100 * 0.3);
             eyeScoreAvg = Math.max(0, Math.min(100, eyeScoreAvg));
 
-            eyeFill.style.width = eyeScoreAvg + '%';
-            eyeVal.textContent = eyeScoreAvg + '%';
+            if (eyeFill) eyeFill.style.width = eyeScoreAvg + '%';
+            if (eyeVal) eyeVal.textContent = eyeScoreAvg + '%';
 
             // Nervousness: frame-to-frame brightness delta (movement detection)
             const totalBrightness = (centerBrightness + edgeBrightness) / (centerCount + edgeCount);
@@ -489,8 +489,8 @@ function startCanvasEyeTracking() {
                 const calmTarget = Math.max(0, Math.min(100, 100 - delta * 4));
                 nervScore = Math.round(nervScore * 0.85 + calmTarget * 0.15);
                 nervScore = Math.max(0, Math.min(100, nervScore));
-                nervFill.style.width = nervScore + '%';
-                nervVal.textContent = Math.round(nervScore) + '%';
+                if (nervFill) nervFill.style.width = nervScore + '%';
+                if (nervVal) nervVal.textContent = Math.round(nervScore) + '%';
             }
             _prevBrightness = totalBrightness;
 

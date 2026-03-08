@@ -1,7 +1,7 @@
 <!-- INTERVIEW SETUP PAGE -->
 <% layout('layouts/dashboard') %>
 
-    <% if (paywallBlocked) { %>
+    <% if (typeof paywallBlocked !== 'undefined' && paywallBlocked) { %>
         <!-- ── PAYWALL SCREEN ─────────────────────────────────────────────── -->
         <div class="paywall-screen animate-fade-in">
             <div class="paywall-card glass-card">

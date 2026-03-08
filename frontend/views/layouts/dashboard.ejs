@@ -30,7 +30,7 @@
 
 
 <body>
-    <div class="app-shell <%= isDemo ? 'shell-demo' : '' %>">
+    <div class="app-shell <%= (typeof isDemo !== 'undefined' && isDemo) ? 'shell-demo' : '' %>">
         <%- include('../partials/sidebar') %>
         <div class="app-main">
             <%- include('../partials/topbar') %>

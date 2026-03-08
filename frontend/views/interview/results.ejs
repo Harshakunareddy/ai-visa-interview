@@ -46,12 +46,10 @@
                 <div class="res-hero-right">
                     <div class="res-verdict verdict-<%= verdictClass %>">
                         <div class="res-verdict-icon">
-                            <% if (verdictClass==='strong_approval' || verdictClass==='likely_approved' ) { %>&#10003;<%
-                                    } %>
-                                    <% if (verdictClass==='borderline' ) { %>&#8776;<% } %>
-                                            <% if (verdictClass==='likely_rejected' || verdictClass==='strong_rejection'
-                                                ) { %>&#10005;<% } %>
-                                                    <% if (verdictClass==='pending' ) { %>&#9679;<% } %>
+                            <% if (verdictClass==='strong_approval' || verdictClass==='likely_approved' ) { %>&#10003;<% } %>
+                            <% if (verdictClass==='borderline' ) { %>&#8776;<% } %>
+                            <% if (verdictClass==='likely_rejected' || verdictClass==='strong_rejection' ) { %>&#10005;<% } %>
+                            <% if (verdictClass==='pending' ) { %>&#9679;<% } %>
                         </div>
                         <div class="res-verdict-label">
                             <%= verdict %>
