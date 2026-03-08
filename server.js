@@ -116,7 +116,7 @@ const globalLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 1000, // Increased from 20 to 1000 to prevent blocking
   message: { success: false, message: 'Too many auth attempts.', errorCode: 'AUTH_RATE_LIMIT', data: null },
 });
 
@@ -213,7 +213,7 @@ app.get('/setup/debug-gemini', (req, res) => {
 });
 
 app.use('/', pageRoutes);
-app.use('/auth', authLimiter, authRoutes);
+app.use('/auth', authRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/interview', interviewRoutes);
 app.use('/subscription', subscriptionRoutes);
