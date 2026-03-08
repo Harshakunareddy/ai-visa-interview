@@ -14,7 +14,7 @@
         <!-- Header bar -->
         <div class="interview-header">
             <div class="interview-brand">
-                Embassy<span class="accent">AI</span>
+                <span class="accent">AI</span>
             </div>
             <div class="session-info" id="sessionInfo">Loading...</div>
             <div class="interview-timer-wrap">
@@ -39,31 +39,31 @@
                     <video id="userVideo" autoplay muted playsinline class="user-video"></video>
                     <canvas id="faceCanvas" class="face-canvas"></canvas>
 
-                    <% if (typeof behavioralFeaturesEnabled === 'undefined' || behavioralFeaturesEnabled) { %>
-                    <!-- Behavioral HUD -->
-                    <div class="video-hud">
-                        <div class="hud-item" id="eyeHud">
-                            <span class="hud-label">👁️ Eye</span>
-                            <div class="hud-bar">
-                                <div class="hud-fill" id="eyeFill" style="width:0%"></div>
+                    <% if (typeof behavioralFeaturesEnabled==='undefined' || behavioralFeaturesEnabled) { %>
+                        <!-- Behavioral HUD -->
+                        <div class="video-hud">
+                            <div class="hud-item" id="eyeHud">
+                                <span class="hud-label">👁️ Eye</span>
+                                <div class="hud-bar">
+                                    <div class="hud-fill" id="eyeFill" style="width:0%"></div>
+                                </div>
+                                <span class="hud-val" id="eyeVal">0%</span>
                             </div>
-                            <span class="hud-val" id="eyeVal">0%</span>
-                        </div>
-                        <div class="hud-item" id="nervHud">
-                            <span class="hud-label">😌 Calm</span>
-                            <div class="hud-bar">
-                                <div class="hud-fill calm" id="nervFill" style="width:100%"></div>
+                            <div class="hud-item" id="nervHud">
+                                <span class="hud-label">😌 Calm</span>
+                                <div class="hud-bar">
+                                    <div class="hud-fill calm" id="nervFill" style="width:100%"></div>
+                                </div>
+                                <span class="hud-val" id="nervVal">100%</span>
                             </div>
-                            <span class="hud-val" id="nervVal">100%</span>
                         </div>
-                    </div>
-                    <% } %>
+                        <% } %>
 
 
 
-                    <div class="recording-indicator" id="recIndicator" style="display:none">
-                        <span class="rec-dot"></span> REC
-                    </div>
+                            <div class="recording-indicator" id="recIndicator" style="display:none">
+                                <span class="rec-dot"></span> REC
+                            </div>
                 </div>
 
                 <!-- Officer Card -->

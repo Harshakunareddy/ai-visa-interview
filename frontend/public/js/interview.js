@@ -43,7 +43,7 @@ let currentQIndex = 0;
 let totalQuestions = questionLimit || 10;
 let timerSeconds = 300; // 5 min
 let timerInterval = null;
-let isEnding = false; 
+let isEnding = false;
 let isSubmitting = false; // Guard for double-submission
 
 let mediaRecorder = null;
@@ -168,28 +168,28 @@ function showQuestionLoading() {
 // ── Speech Synthesis ──────────────────────────────────────────
 function speakText(text) {
     if (!window.speechSynthesis) return;
-    
+
     // Voices are loaded asynchronously
     const speak = (isRetry = false) => {
         // Only cancel if already speaking to avoid unnecessary engine resets
         if (window.speechSynthesis.speaking) {
             window.speechSynthesis.cancel();
         }
-        
+
         // Wait for the cancel to settle
         setTimeout(() => {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.rate = 1.0; // Reset to default for better stability
             utterance.pitch = 1.0;
-            
+
             const voices = availableVoices.length ? availableVoices : window.speechSynthesis.getVoices();
-            
+
             let voice;
             if (isRetry) {
                 // On retry, try to find a local (offline) voice first as they are more stable
-                voice = voices.find(v => v.lang.startsWith('en') && v.localService === true) || 
-                        voices.find(v => v.lang.startsWith('en')) || 
-                        voices[0];
+                voice = voices.find(v => v.lang.startsWith('en') && v.localService === true) ||
+                    voices.find(v => v.lang.startsWith('en')) ||
+                    voices[0];
             } else {
                 // Standard selection: Prefer high quality but local if possible
                 // Filter out "Natural" online voices if they have a history of failing in this session
@@ -197,20 +197,20 @@ function speakText(text) {
                 const source = stableVoices.length ? stableVoices : voices;
 
                 voice = source.find(v => (v.lang === 'en-IN' || v.lang === 'en-GB') && v.name.toLowerCase().includes('male')) ||
-                        source.find(v => v.lang === 'en-IN') || 
-                        source.find(v => v.lang.startsWith('en')) ||
-                        source[0];
+                    source.find(v => v.lang === 'en-IN') ||
+                    source.find(v => v.lang.startsWith('en')) ||
+                    source[0];
             }
 
-            
+
             if (voice) utterance.voice = voice;
 
             safeSetStyle(officerSpeaking, 'display', 'flex');
             utterance.onend = () => { safeSetStyle(officerSpeaking, 'display', 'none'); };
-            utterance.onerror = (e) => { 
+            utterance.onerror = (e) => {
                 console.error('Speech synthesis error:', e);
                 safeSetStyle(officerSpeaking, 'display', 'none');
-                
+
                 // If it failed and it's not a permission issue, try one more time with default voice
                 if (e.error === 'synthesis-failed' && !isRetry) {
                     console.log('Retrying speech with fallback voice...');
@@ -224,7 +224,7 @@ function speakText(text) {
                     window.addEventListener('click', resume);
                 }
             };
-            
+
             window.speechSynthesis.speak(utterance);
         }, isRetry ? 50 : 250); // Shorter wait for retry, longer for first attempt
     };
@@ -263,7 +263,7 @@ function initSpeechRecognition() {
         safeSetText(micText, 'Start Telling');
         safeSetText(speechStatus, '');
         if (Date.now() - speechStartTime > 2000) behavioralData.duration = (Date.now() - speechStartTime) / 1000;
-        
+
         // If they stopped telling, and there's content, let's auto-submit (as requested by user)
         if (answerTextarea && answerTextarea.value.trim().length > 5) {
             submitAnswer();
@@ -280,7 +280,7 @@ function initSpeechRecognition() {
             if (answerTextarea) answerTextarea.value += final;
             updateWordCount();
         }
-        window._lastInterim = interim; 
+        window._lastInterim = interim;
         if (interim) safeSetText(speechStatus, '🎙️ ' + interim);
     };
     recognition.onerror = (e) => {
@@ -311,14 +311,14 @@ function updateWordCount() {
 function normalizeTranscript(text) {
     return text
         .replace(/\b(um+|uh+|hmm+|err+|ah+)\b/gi, '') // removed "like" and "you know" as they could be part of actual answers
-        .replace(/\s{2,}/g, ' ')  
-        .replace(/^[\s,]+|[\s,]+$/g, '') 
+        .replace(/\s{2,}/g, ' ')
+        .replace(/^[\s,]+|[\s,]+$/g, '')
         .trim();
 }
 
 // ── Submit Answer ─────────────────────────────────────────────
 async function submitAnswer() {
-    if (isSubmitting) return; 
+    if (isSubmitting) return;
 
     // Capture any pending interim speech results before finishing
     if (window._lastInterim) {
@@ -326,12 +326,12 @@ async function submitAnswer() {
         window._lastInterim = '';
         updateWordCount();
     }
-    
+
     const answer = normalizeTranscript(answerTextarea ? answerTextarea.value.trim() : '');
-    if (!answer) { 
-        safeSetText(speechStatus, '⚠️ Please provide an answer'); 
+    if (!answer) {
+        safeSetText(speechStatus, '⚠️ Please provide an answer');
         isSubmitting = false;
-        return; 
+        return;
     }
 
     isSubmitting = true;
@@ -429,7 +429,7 @@ let _eyeTrackInterval = null;
 
 function initEyeTracking() {
     if (!userVideo) return;
-    
+
     // Check if behavioral features are enabled for this session
     if (session.behavioralFeaturesEnabled === false) {
         return;
@@ -589,10 +589,10 @@ startBtn?.addEventListener('click', async () => {
     // Unlock audio with a silent utterance
     const unlock = new SpeechSynthesisUtterance('');
     window.speechSynthesis.speak(unlock);
-    
+
     startOverlay.classList.add('fade-out');
     setTimeout(() => startOverlay.style.display = 'none', 500);
-    
+
     init();
 });
 
