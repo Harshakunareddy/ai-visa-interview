@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        <%= title %>
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #080b14;
+            --surface: #0f1422;
+            --surface2: #161c2e;
+            --border: rgba(255, 255, 255, 0.07);
+            --border2: rgba(255, 255, 255, 0.12);
+            --accent: #6366f1;
+            --accent2: #8b5cf6;
+            --text: #f1f5f9;
+            --muted: #64748b;
+            --muted2: #94a3b8;
+            --red: #ef4444;
+            --red-bg: rgba(239, 68, 68, 0.1);
+            --red-border: rgba(239, 68, 68, 0.25);
+            --yellow: #f59e0b;
+            --yellow-bg: rgba(245, 158, 11, 0.1);
+            --yellow-border: rgba(245, 158, 11, 0.25);
+            --green: #10b981;
+            --green-bg: rgba(16, 185, 129, 0.1);
+            --green-border: rgba(16, 185, 129, 0.25);
+            --blue: #3b82f6;
+            --blue-bg: rgba(59, 130, 246, 0.1);
+            --blue-border: rgba(59, 130, 246, 0.25);
+            --mono: 'JetBrains Mono', 'Fira Code', monospace;
+        }
+
+        html,
+        body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: radial-gradient(ellipse 70% 50% at 5% 0%, rgba(99, 102, 241, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 40% at 95% 100%, rgba(239, 68, 68, 0.07) 0%, transparent 60%);
+        }
+
+        /* ── Layout ── */
+        .shell {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            border-bottom: 1px solid var(--border);
+            background: rgba(15, 20, 34, 0.8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .brand-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-icon svg {
+            width: 17px;
+            height: 17px;
+            stroke: #fff;
+            fill: none;
+        }
+
+        .page-title {
+            font-size: 13px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .page-title::before {
+            content: '›';
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 99px;
+            background: var(--red-bg);
+            border: 1px solid var(--red-border);
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--red);
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--red);
+            animation: blink 1.2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        .btn-danger {
+            background: var(--red-bg);
+            color: var(--red);
+            border: 1px solid var(--red-border);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-green {
+            background: var(--green-bg);
+            color: var(--green);
+            border: 1px solid var(--green-border);
+        }
+
+        .btn-green:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .content {
+            flex: 1;
+            padding: 28px 32px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ── Stats row ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 20px;
+            transition: border-color 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border2);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-sub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .stat-red .stat-value {
+            color: var(--red);
+        }
+
+        .stat-yellow .stat-value {
+            color: var(--yellow);
+        }
+
+        .stat-green .stat-value {
+            color: var(--green);
+        }
+
+        .stat-blue .stat-value {
+            color: var(--blue);
+        }
+
+        .stat-accent .stat-value {
+            color: #818cf8;
+        }
+
+        /* ── Timeline bar chart ── */
+        .timeline-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 60px;
+        }
+
+        .bar-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .bar {
+            width: 100%;
+            border-radius: 3px 3px 0 0;
+            min-height: 3px;
+            transition: opacity 0.2s;
+            cursor: default;
+        }
+
+        .bar:hover {
+            opacity: 0.8;
+        }
+
+        .bar-label {
+            font-size: 9px;
+            color: var(--muted);
+            font-family: var(--mono);
+        }
+
+        /* ── Top errors ── */
+        .top-errors {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+        }
+
+        .top-error-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .top-error-row:last-child {
+            border-bottom: none;
+        }
+
+        .error-rank {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            flex-shrink: 0;
+        }
+
+        .error-count-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .error-count-fill {
+            height: 100%;
+            border-radius: 99px;
+            background: linear-gradient(90deg, var(--red), #f97316);
+        }
+
+        .error-msg-text {
+            font-size: 12px;
+            color: var(--text);
+            flex: 3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-family: var(--mono);
+        }
+
+        .error-count-label {
+            font-size: 12px;
+            color: var(--red);
+            font-weight: 700;
+            min-width: 30px;
+            text-align: right;
+        }
+
+        .error-last {
+            font-size: 11px;
+            color: var(--muted);
+            min-width: 80px;
+            text-align: right;
+        }
+
+        /* ── Filter bar ── */
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+        }
+
+        .filter-bar input,
+        .filter-bar select {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            padding: 7px 12px;
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .filter-bar input:focus,
+        .filter-bar select:focus {
+            border-color: var(--accent);
+        }
+
+        .filter-bar input[name="search"] {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .total-label {
+            margin-left: auto;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* ── Log table ── */
+        .log-table-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .log-table thead th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            white-space: nowrap;
+        }
+
+        .log-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.12s;
+        }
+
+        .log-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .log-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .log-table tbody tr.resolved-row {
+            opacity: 0.45;
+        }
+
+        .log-table td {
+            padding: 10px 16px;
+            vertical-align: middle;
+        }
+
+        /* Status badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 9px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: var(--mono);
+        }
+
+        .s5 {
+            background: var(--red-bg);
+            color: var(--red);
+            border: 1px solid var(--red-border);
+        }
+
+        .s4 {
+            background: var(--yellow-bg);
+            color: var(--yellow);
+            border: 1px solid var(--yellow-border);
+        }
+
+        .s2 {
+            background: var(--green-bg);
+            color: var(--green);
+            border: 1px solid var(--green-border);
+        }
+
+        .s-other {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--muted2);
+            border: 1px solid var(--border);
+        }
+
+        /* Method badge */
+        .method-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: var(--mono);
+        }
+
+        .m-get {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--green);
+        }
+
+        .m-post {
+            background: rgba(59, 130, 246, 0.12);
+            color: var(--blue);
+        }
+
+        .m-delete {
+            background: rgba(239, 68, 68, 0.12);
+            color: var(--red);
+        }
+
+        .m-patch {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--yellow);
+        }
+
+        .m-other {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--muted2);
+        }
+
+        .msg-cell {
+            max-width: 320px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-family: var(--mono);
+            font-size: 12px;
+        }
+
+        .file-cell {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: #818cf8;
+            white-space: nowrap;
+        }
+
+        .file-cell .line-no {
+            color: var(--muted);
+        }
+
+        .time-cell {
+            font-size: 11px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .url-cell {
+            font-size: 11px;
+            color: var(--muted2);
+            font-family: var(--mono);
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .user-cell {
+            font-size: 11px;
+            color: var(--muted);
+        }
+
+        .resolved-check {
+            color: var(--green);
+            font-size: 14px;
+        }
+
+        .actions-cell {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* ── Expandable detail ── */
+        .detail-row td {
+            padding: 0 !important;
+        }
+
+        .detail-panel {
+            display: none;
+            padding: 20px 24px;
+            background: var(--surface2);
+            border-top: 1px solid var(--border);
+            animation: slideDown 0.2s ease;
+        }
+
+        .detail-panel.open {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+
+        .detail-block label {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .detail-block pre,
+        .detail-block code {
+            font-family: var(--mono);
+            font-size: 11px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--muted2);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 180px;
+        }
+
+        .detail-block .val {
+            font-size: 12px;
+            color: var(--text);
+            font-family: var(--mono);
+        }
+
+        .stack-block {
+            grid-column: 1 / -1;
+        }
+
+        .resolve-form {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .resolve-form input {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            padding: 7px 12px;
+            font-size: 12px;
+            outline: none;
+        }
+
+        /* ── Pagination ── */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+        }
+
+        .page-btn {
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            color: var(--text);
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            transition: all 0.15s;
+        }
+
+        .page-btn:hover,
+        .page-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .page-ellipsis {
+            color: var(--muted);
+            padding: 0 4px;
+        }
+
+        /* ── Empty state ── */
+        .empty-state {
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .empty-sub {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* ── Tooltip ── */
+        [title] {
+            cursor: help;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .stats-row {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .content {
+                padding: 20px 16px;
+            }
+
+            .topbar {
+                padding: 12px 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell">
+
+        <!-- ── Topbar ── -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <a href="/setup" class="brand">
+                    <div class="brand-icon">
+                        <svg viewBox="0 0 24 24" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                            <polyline points="9,22 9,12 15,12 15,22" />
+                        </svg>
+                    </div>
+                    EmbassyAI
+                </a>
+                <span class="page-title">Error Logs</span>
+                <span class="live-badge"><span class="live-dot"></span> Live</span>
+            </div>
+            <div class="topbar-right">
+                <a href="/setup/errors/api" target="_blank" class="btn btn-ghost">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+                        <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+                    </svg>
+                    JSON API
+                </a>
+                <button class="btn btn-danger" onclick="clearResolved()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3,6 5,6 21,6" />
+                        <path d="M19,6l-1,14a2,2,0,01-2,2H8a2,2,0,01-2-2L5,6" />
+                        <path d="M10,11v6" />
+                        <path d="M14,11v6" />
+                    </svg>
+                    Clear Resolved
+                </button>
+                <button class="btn btn-ghost" onclick="window.location.reload()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="23,4 23,10 17,10" />
+                        <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
+                    </svg>
+                    Refresh
+                </button>
+            </div>
+        </header>
+
+        <div class="content">
+
+            <!-- ── Stats ── -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-label">Total Errors</div>
+                    <div class="stat-value">
+                        <%= stats.total.toLocaleString() %>
+                    </div>
+                    <div class="stat-sub">all time</div>
+                </div>
+                <div class="stat-card stat-red">
+                    <div class="stat-label">Server (5xx)</div>
+                    <div class="stat-value">
+                        <%= stats.errors5xx.toLocaleString() %>
+                    </div>
+                    <div class="stat-sub">server errors</div>
+                </div>
+                <div class="stat-card stat-yellow">
+                    <div class="stat-label">Client (4xx)</div>
+                    <div class="stat-value">
+                        <%= stats.errors4xx.toLocaleString() %>
+                    </div>
+                    <div class="stat-sub">client errors</div>
+                </div>
+                <div class="stat-card stat-accent">
+                    <div class="stat-label">Last Hour</div>
+                    <div class="stat-value">
+                        <%= stats.last1h.toLocaleString() %>
+                    </div>
+                    <div class="stat-sub">in past 60 min</div>
+                </div>
+                <div class="stat-card stat-blue">
+                    <div class="stat-label">Last 24h</div>
+                    <div class="stat-value">
+                        <%= stats.last24h.toLocaleString() %>
+                    </div>
+                    <div class="stat-sub">in past 24 hours</div>
+                </div>
+                <div class="stat-card stat-green">
+                    <div class="stat-label">Resolved</div>
+                    <div class="stat-value">
+                        <%= stats.resolved.toLocaleString() %>
+                    </div>
+                    <div class="stat-sub">marked fixed</div>
+                </div>
+            </div>
+
+            <!-- ── Timeline bar chart ── -->
+            <% if (hourlyTimeline.length> 0) { %>
+                <div class="timeline-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12" />
+                            </svg>
+                            Error Activity — Last 24 Hours
+                        </div>
+                        <span style="font-size:11px;color:var(--muted);">Each bar = 1 hour window</span>
+                    </div>
+                    <div class="bar-chart" id="barChart"></div>
+                </div>
+                <% } %>
+
+                    <!-- ── Top Errors ── -->
+                    <% if (topErrors.length> 0) { %>
+                        <div class="top-errors">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polygon
+                                            points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2" />
+                                    </svg>
+                                    Most Frequent Errors
+                                </div>
+                            </div>
+                            <% const maxCount=topErrors[0]?.count || 1; %>
+                                <% topErrors.forEach((e, i)=> { %>
+                                    <div class="top-error-row">
+                                        <div class="error-rank">#<%= i+1 %>
+                                        </div>
+                                        <div class="error-msg-text" title="<%= e._id %>">
+                                            <%= e._id %>
+                                        </div>
+                                        <div class="error-count-bar">
+                                            <div class="error-count-fill"
+                                                style="width:<%= Math.round((e.count/maxCount)*100) %>%"></div>
+                                        </div>
+                                        <div class="error-count-label">
+                                            <%= e.count %>×
+                                        </div>
+                                        <div
+                                            class="status-badge <%= e.statusCode >= 500 ? 's5' : e.statusCode >= 400 ? 's4' : 's2' %>">
+                                            <%= e.statusCode %>
+                                        </div>
+                                        <div class="error-last">
+                                            <%= new Date(e.lastSeen).toLocaleString('en-IN',
+                                                {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) %>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                        </div>
+                        <% } %>
+
+                            <!-- ── Filter Bar ── -->
+                            <form class="filter-bar" method="GET" action="/setup/errors">
+                                <span class="filter-label">Filter:</span>
+                                <input type="text" name="search" placeholder="🔍  Search message, URL, file, email..."
+                                    value="<%= filters.search || '' %>" />
+                                <select name="status">
+                                    <option value="">All Status</option>
+                                    <option value="500" <%=filters.status==='500' ? 'selected' : '' %>>500 Server Error
+                                    </option>
+                                    <option value="404" <%=filters.status==='404' ? 'selected' : '' %>>404 Not Found
+                                    </option>
+                                    <option value="401" <%=filters.status==='401' ? 'selected' : '' %>>401 Unauthorized
+                                    </option>
+                                    <option value="403" <%=filters.status==='403' ? 'selected' : '' %>>403 Forbidden
+                                    </option>
+                                    <option value="400" <%=filters.status==='400' ? 'selected' : '' %>>400 Bad Request
+                                    </option>
+                                </select>
+                                <select name="resolved">
+                                    <option value="">All</option>
+                                    <option value="false" <%=filters.resolved==='false' ? 'selected' : '' %>>Unresolved
+                                    </option>
+                                    <option value="true" <%=filters.resolved==='true' ? 'selected' : '' %>>Resolved
+                                    </option>
+                                </select>
+                                <input type="datetime-local" name="since" value="<%= filters.since || '' %>"
+                                    title="Show errors after this date" />
+                                <button type="submit" class="btn btn-primary">Apply</button>
+                                <a href="/setup/errors" class="btn btn-ghost">Reset</a>
+                                <span class="total-label">
+                                    <%= total.toLocaleString() %> result<%= total !==1 ? 's' : '' %>
+                                </span>
+                            </form>
+
+                            <!-- ── Log Table ── -->
+                            <div class="log-table-wrap">
+                                <% if (logs.length===0) { %>
+                                    <div class="empty-state">
+                                        <div class="empty-icon">✅</div>
+                                        <div class="empty-title">No errors found</div>
+                                        <div class="empty-sub">Your app is running clean! Any new errors will appear
+                                            here.</div>
+                                    </div>
+                                    <% } else { %>
+                                        <table class="log-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Status</th>
+                                                    <th>Method</th>
+                                                    <th>Error Message</th>
+                                                    <th>File : Line</th>
+                                                    <th>URL</th>
+                                                    <th>User</th>
+                                                    <th>Time</th>
+                                                    <th>✓</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% logs.forEach((log, idx)=> {
+                                                    const sc = log.statusCode;
+                                                    const scClass = sc >= 500 ? 's5' : sc >= 400 ? 's4' : sc >= 200 ?
+                                                    's2' : 's-other';
+                                                    const m = (log.method || 'GET').toLowerCase();
+                                                    const mClass = m === 'get' ? 'm-get' : m === 'post' ? 'm-post' : m
+                                                    === 'delete' ? 'm-delete' : m === 'patch' ? 'm-patch' : 'm-other';
+                                                    const rowId = `row-${log._id}`;
+                                                    const panelId = `panel-${log._id}`;
+                                                    %>
+                                                    <tr class="<%= log.resolved ? 'resolved-row' : '' %>"
+                                                        onclick="toggleDetail('<%= log._id %>')">
+                                                        <td
+                                                            style="color:var(--muted);font-size:11px;font-family:var(--mono)">
+                                                            <%= ((page-1)*limit) + idx + 1 %>
+                                                        </td>
+                                                        <td><span class="status-badge <%= scClass %>">
+                                                                <%= sc %>
+                                                            </span></td>
+                                                        <td><span class="method-badge <%= mClass %>">
+                                                                <%= (log.method||'?').toUpperCase() %>
+                                                            </span></td>
+                                                        <td class="msg-cell" title="<%= log.message %>">
+                                                            <%= log.message %>
+                                                        </td>
+                                                        <td class="file-cell">
+                                                            <% if (log.file) { %>
+                                                                <span title="<%= log.file %>">
+                                                                    <%= log.file.split('/').pop() %>
+                                                                </span>
+                                                                <span class="line-no">:<%= log.line %></span>
+                                                                <% } else { %><span style="color:var(--muted)">—</span>
+                                                                    <% } %>
+                                                        </td>
+                                                        <td class="url-cell" title="<%= log.url %>">
+                                                            <%= log.url %>
+                                                        </td>
+                                                        <td class="user-cell">
+                                                            <%= log.userEmail || log.ip || '—' %>
+                                                        </td>
+                                                        <td class="time-cell"
+                                                            title="<%= new Date(log.timestamp).toISOString() %>">
+                                                            <%= new Date(log.timestamp).toLocaleString('en-IN',
+                                                                {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',second:'2-digit'})
+                                                                %>
+                                                        </td>
+                                                        <td onclick="event.stopPropagation()">
+                                                            <% if (log.resolved) { %>
+                                                                <span class="resolved-check" title="Resolved">✓</span>
+                                                                <% } else { %>
+                                                                    <button class="btn btn-green"
+                                                                        style="padding:4px 10px;font-size:11px;"
+                                                                        onclick="resolve('<%= log._id %>', event)">Fix</button>
+                                                                    <% } %>
+                                                        </td>
+                                                    </tr>
+                                                    <!-- Detail panel -->
+                                                    <tr class="detail-row" id="<%= 'row-'+log._id %>">
+                                                        <td colspan="9">
+                                                            <div class="detail-panel" id="<%= 'panel-'+log._id %>">
+                                                                <div class="detail-grid">
+                                                                    <div class="detail-block">
+                                                                        <label>Error Type &amp; Code</label>
+                                                                        <code><%= log.errorType %> · <%= log.errorCode %></code>
+                                                                    </div>
+                                                                    <div class="detail-block">
+                                                                        <label>Full File Path</label>
+                                                                        <code><%= log.file || '—' %> : line <%= log.line %> col <%= log.column %></code>
+                                                                    </div>
+                                                                    <div class="detail-block">
+                                                                        <label>Request Info</label>
+                                                                        <code><%= log.method %> <%= log.url %>
+IP: <%= log.ip %>
+UA: <%= (log.userAgent||'').substring(0,80) %></code>
+                                                                    </div>
+                                                                    <div class="detail-block">
+                                                                        <label>Request Body (sanitized)</label>
+                                                                        <code><%= log.body ? JSON.stringify(log.body, null, 2) : 'null' %></code>
+                                                                    </div>
+                                                                    <div class="detail-block stack-block">
+                                                                        <label>Stack Trace</label>
+                                                                        <pre><%= log.stackTrace || 'No stack trace available.' %></pre>
+                                                                    </div>
+                                                                    <% if (!log.resolved) { %>
+                                                                        <div class="detail-block">
+                                                                            <label>Mark as Resolved</label>
+                                                                            <div class="resolve-form">
+                                                                                <input type="text"
+                                                                                    id="note-<%= log._id %>"
+                                                                                    placeholder="Optional note: what was the fix?" />
+                                                                                <button class="btn btn-green"
+                                                                                    onclick="resolve('<%= log._id %>', event, true)">✓
+                                                                                    Mark Fixed</button>
+                                                                            </div>
+                                                                        </div>
+                                                                        <% } else { %>
+                                                                            <div class="detail-block">
+                                                                                <label>Resolution</label>
+                                                                                <code>Fixed at: <%= log.resolvedAt ? new Date(log.resolvedAt).toLocaleString() : '—' %>
+Note: <%= log.resolvedNote || 'No note left' %></code>
+                                                                            </div>
+                                                                            <% } %>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                            </tbody>
+                                        </table>
+                                        <% } %>
+                            </div>
+
+                            <!-- ── Pagination ── -->
+                            <% if (pages> 1) { %>
+                                <div class="pagination">
+                                    <% if (page> 1) { %>
+                                        <a href="?page=<%= page-1 %>&search=<%= filters.search||'' %>&status=<%= filters.status||'' %>&resolved=<%= filters.resolved||'' %>"
+                                            class="page-btn">← Prev</a>
+                                        <% } %>
+                                            <% for (let p=Math.max(1,page-2); p <=Math.min(pages,page+2); p++) { %>
+                                                <a href="?page=<%= p %>&search=<%= filters.search||'' %>&status=<%= filters.status||'' %>&resolved=<%= filters.resolved||'' %>"
+                                                    class="page-btn <%= p===page ? 'active' : '' %>">
+                                                    <%= p %>
+                                                </a>
+                                                <% } %>
+                                                    <% if (page < pages) { %>
+                                                        <a href="?page=<%= page+1 %>&search=<%= filters.search||'' %>&status=<%= filters.status||'' %>&resolved=<%= filters.resolved||'' %>"
+                                                            class="page-btn">Next →</a>
+                                                        <% } %>
+                                                            <span
+                                                                style="color:var(--muted);font-size:12px;margin-left:8px;">Page
+                                                                <%= page %> of <%= pages %>
+                                                            </span>
+                                </div>
+                                <% } %>
+
+        </div><!-- /content -->
+    </div><!-- /shell -->
+
+    <input type="hidden" id="timeline-data-raw" value='<%- JSON.stringify(hourlyTimeline || []) %>'>
+    <script>
+        // ── Bar Chart ──────────────────────────────────────────────────────────────
+        const timelineData = JSON.parse(document.getElementById('timeline-data-raw').value);
+        const chart = document.getElementById('barChart');
+        if (chart && timelineData.length > 0) {
+            const maxVal = Math.max(...timelineData.map(d => d.count), 1);
+            timelineData.forEach(d => {
+                const pct = Math.max(6, Math.round((d.count / maxVal) * 100));
+                const wrap = document.createElement('div');
+                wrap.className = 'bar-wrap';
+                wrap.title = `Hour ${d._id.hour}:00 — ${d.count} error(s), ${d.errors5xx} server`;
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = pct + '%';
+                bar.style.background = d.errors5xx > 0
+                    ? `linear-gradient(180deg, #ef4444, #f97316)`
+                    : `linear-gradient(180deg, #f59e0b, #eab308)`;
+                const lbl = document.createElement('div');
+                lbl.className = 'bar-label';
+                lbl.textContent = d._id.hour + 'h';
+                wrap.appendChild(bar);
+                wrap.appendChild(lbl);
+                chart.appendChild(wrap);
+            });
+        }
+
+        // ── Row expand/collapse ────────────────────────────────────────────────────
+        function toggleDetail(id) {
+            const panel = document.getElementById('panel-' + id);
+            if (!panel) return;
+            panel.classList.toggle('open');
+        }
+
+        // ── Resolve error ─────────────────────────────────────────────────────────
+        async function resolve(id, event, fromPanel = false) {
+            if (event) event.stopPropagation();
+            const noteEl = document.getElementById('note-' + id);
+            const note = noteEl ? noteEl.value : '';
+            try {
+                const res = await fetch('/setup/errors/' + id + '/resolve', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ note }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert('Failed: ' + data.message);
+                }
+            } catch (e) { alert('Network error: ' + e.message); }
+        }
+
+        // ── Clear resolved ─────────────────────────────────────────────────────────
+        async function clearResolved() {
+            if (!confirm('Delete all resolved error logs? This cannot be undone.')) return;
+            try {
+                const res = await fetch('/setup/errors/clear', { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`Cleared ${data.deleted} resolved logs.`);
+                    window.location.reload();
+                }
+            } catch (e) { alert('Error: ' + e.message); }
+        }
+
+        // ── Auto-refresh every 30s ─────────────────────────────────────────────────
+        let refreshTimer = setTimeout(() => window.location.reload(), 30000);
+        document.addEventListener('click', () => {
+            clearTimeout(refreshTimer);
+            refreshTimer = setTimeout(() => window.location.reload(), 30000);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,78 @@
+<nav class="navbar" id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container navbar-inner">
+        <!-- Brand -->
+        <a href="/" class="navbar-brand" aria-label="AI Home">
+            <div class="brand-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                    <polyline points="9,22 9,12 15,12 15,22" />
+                </svg>
+            </div>
+            <span class="brand-name"><%= company.name || 'AI' %></span>
+        </a>
+
+        <!-- Desktop Nav Links -->
+        <ul class="navbar-links" role="list">
+            <li><a href="/#features" class="nav-link">Features</a></li>
+            <li><a href="/pricing" class="nav-link">Pricing</a></li>
+            <li><a href="/about" class="nav-link">About</a></li>
+        </ul>
+
+        <!-- Right actions -->
+        <div class="navbar-actions">
+            <!-- Theme Toggle -->
+            <button id="themeToggle" class="btn-icon" aria-label="Toggle dark/light mode" title="Toggle theme">
+                <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <circle cx="12" cy="12" r="5" />
+                    <line x1="12" y1="1" x2="12" y2="3" />
+                    <line x1="12" y1="21" x2="12" y2="23" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" />
+                    <line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                </svg>
+                <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+            </button>
+
+            <% if (user) { %>
+                <a href="/dashboard" class="btn btn-ghost btn-sm">Dashboard</a>
+                <div class="user-avatar-mini" title="<%= user.displayName %>">
+                    <% if (user.photoURL) { %>
+                        <img src="<%= user.photoURL %>" alt="<%= user.displayName %>" width="36" height="36" />
+                        <% } else { %>
+                            <span>
+                                <%= (user.displayName || user.email || 'U' )[0].toUpperCase() %>
+                            </span>
+                            <% } %>
+                </div>
+                <% } else { %>
+                    <a href="/auth/login" class="btn btn-ghost btn-sm">Login</a>
+                    <a href="/auth/login" class="btn btn-primary btn-sm">Get Started</a>
+                    <% } %>
+
+                        <!-- Mobile burger -->
+                        <button class="burger" id="burgerBtn" aria-label="Open menu" aria-expanded="false">
+                            <span></span><span></span><span></span>
+                        </button>
+        </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobileMenu" role="menu">
+        <a href="/#features" class="mobile-nav-link">Features</a>
+        <a href="/pricing" class="mobile-nav-link">Pricing</a>
+        <a href="/about" class="mobile-nav-link">About</a>
+        <% if (user) { %>
+            <a href="/dashboard" class="mobile-nav-link">Dashboard</a>
+            <% } else { %>
+                <a href="/auth/login" class="mobile-nav-link">Login</a>
+                <a href="/auth/login" class="btn btn-primary btn-sm" style="margin-top:1rem">Get Started →</a>
+                <% } %>
+    </div>
+</nav>

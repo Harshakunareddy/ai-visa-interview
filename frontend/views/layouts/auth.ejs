@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        <%= title %>
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/css/variables.css" />
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/components.css" />
+    <link rel="stylesheet" href="/css/auth.css" />
+    <link rel="stylesheet" href="/css/animations.css" />
+    <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+</head>
+
+<body class="auth-body">
+    <div class="auth-container">
+        <%- body %>
+    </div>
+
+    <% if (isFirebaseConfigured) { %>
+        <!--
+        Each field is individually JSON.stringify'd — JSON.stringify(string) ALWAYS
+        returns a quoted string literal, never undefined/empty. Safe for all inputs.
+    -->
+        <input type="hidden" id="fb-config-data" value='<%- JSON.stringify(firebaseConfig || {}) %>'>
+        <script>
+            try {
+                window.__fbCfg = JSON.parse(document.getElementById('fb-config-data').value);
+            } catch (e) {
+                console.error('Failed to parse Firebase config:', e);
+                window.__fbCfg = {};
+            }
+        </script>
+        <script type="module">
+            import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+            import { getAuth } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+            try {
+                const app = initializeApp(window.__fbCfg);
+                window.__firebaseAuth = getAuth(app);
+            } catch (err) {
+                console.error('Firebase init failed:', err.message);
+                window.__firebaseInitError = err.message;
+            }
+        </script>
+        <% } else { %>
+            <script>
+                window.__firebaseInitError = 'Authentication service is temporarily unavailable. Please try again shortly.';
+                console.warn('Firebase not configured on this server.');
+            </script>
+            <% } %>
+
+                <script>
+                    window.addEventListener('DOMContentLoaded', function () {
+                        if (window.__firebaseInitError) {
+                            var btn = document.getElementById('googleSignInBtn');
+                            if (btn) {
+                                btn.disabled = true;
+                                btn.textContent = '⚠️ Login temporarily unavailable';
+                                btn.style.opacity = '0.5';
+                                btn.style.cursor = 'not-allowed';
+                            }
+                            var errDiv = document.createElement('div');
+                            errDiv.style.cssText = 'background:rgba(239,68,68,0.15);border:1px solid #ef4444;color:#fca5a5;padding:12px 16px;border-radius:10px;margin-bottom:16px;font-size:13px;line-height:1.5;';
+                            errDiv.innerHTML = '<strong>⚠️ Authentication Unavailable</strong><br>Our login service is temporarily down. Please try again in a moment.';
+                            var card = document.querySelector('.auth-card');
+                            if (card) card.prepend(errDiv);
+                        }
+                    });
+                </script>
+
+                <script src="/js/theme.js"></script>
+</body>
+
+</html>

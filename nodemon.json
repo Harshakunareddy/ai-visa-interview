@@ -1,0 +1,18 @@
+{
+    "watch": [
+        "server.js",
+        "backend/"
+    ],
+    "ext": "js,json",
+    "ignore": [
+        "frontend/",
+        "node_modules/",
+        "logs/",
+        "*.test.js"
+    ],
+    "delay": 500,
+    "env": {
+        "NODE_ENV": "development"
+    },
+    "verbose": false
+}

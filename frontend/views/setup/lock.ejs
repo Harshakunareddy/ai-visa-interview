@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Setup Access | EmbassyAI</title>
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" />
+    <link rel="stylesheet" href="/css/variables.css" />
+    <link rel="stylesheet" href="/css/reset.css" />
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg);
+            background-image: radial-gradient(ellipse at 30% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 70%, rgba(168, 85, 247, 0.1) 0%, transparent 60%);
+            padding: 2rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .lock-card {
+            max-width: 420px;
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+        }
+
+        .lock-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .lock-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .lock-sub {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .token-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+        }
+
+        .token-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+        }
+
+        .btn-access {
+            width: 100%;
+            padding: 0.875rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            color: #fff;
+            border: none;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-access:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .error-msg {
+            color: #fca5a5;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .hint {
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .hint code {
+            background: var(--surface);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent-light);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="lock-card">
+        <div class="lock-icon">🔐</div>
+        <h1 class="lock-title">Setup Access Required</h1>
+        <p class="lock-sub">Enter your setup access token to continue</p>
+
+        <% if (error) { %>
+            <p class="error-msg">⚠️ <%= error %>
+            </p>
+            <% } %>
+
+                <form action="/setup/verify-token" method="POST">
+                    <input type="password" class="token-input" name="token" placeholder="••••••••••••••••••••••••"
+                        autofocus autocomplete="off" spellcheck="false" />
+                    <button type="submit" class="btn-access">Access Setup Dashboard →</button>
+                </form>
+
+                <div class="hint">
+                    Find your token in the server console output on first run:<br />
+                    <code>🔑 FIRST-TIME SETUP TOKEN: &lt;token&gt;</code>
+                </div>
+    </div>
+</body>
+
+</html>

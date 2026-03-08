@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        <%= title %> | EmbassyAI
+    </title>
+    <meta name="description" content="EmbassyAI Setup — Configure all service credentials securely." />
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" />
+    <link rel="stylesheet" href="/css/variables.css" />
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/setup-admin.css" />
+</head>
+
+<body class="setup-body">
+
+    <!-- Animated Background -->
+    <div class="setup-bg">
+        <div class="bg-grid"></div>
+        <div class="bg-orb orb-tl"></div>
+        <div class="bg-orb orb-br"></div>
+    </div>
+
+    <!-- Page Wrapper -->
+    <div class="setup-page" role="main">
+
+        <!-- ── Top Bar ─────────────────────────────────────────── -->
+        <header class="setup-topbar">
+            <div class="setup-brand">
+                <div class="brand-icon-sm">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span>Embassy<span class="accent">AI</span></span>
+                    <small>Admin Setup</small>
+                </div>
+            </div>
+
+            <div class="topbar-center">
+                <!-- Progress bar -->
+                <div class="topbar-progress">
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progressFill" style="width:<%= completion %>%"></div>
+                    </div>
+                    <span class="pct-badge" id="completionPct">
+                        <%= completion %>%
+                    </span>
+                </div>
+            </div>
+
+            <div class="topbar-actions">
+                <!-- Service status dots -->
+                <div class="service-dots">
+                    <% const quickStatus=[ { key: 'mongodb' , label: 'DB' , s: status.mongodb }, { key: 'firebase' ,
+                        label: 'Firebase' , s: status.firebase }, { key: 'gemini' , label: 'AI' , s: status.gemini }, {
+                        key: 'cloudinary' ,label: 'Cloud' , s: status.cloudinary }, { key: 'razorpay' , label: 'Pay' ,
+                        s: status.razorpay }, ]; %>
+                        <% quickStatus.forEach(si=> { %>
+                            <div class="svc-dot-wrap" title="<%= si.label %>: <%= si.s.msg %>">
+                                <span class="status-dot-sm <%= si.s.ok ? 'dot-green' : 'dot-red' %>"
+                                    id="dot-<%= si.key %>"></span>
+                                <span class="svc-dot-label">
+                                    <%= si.label %>
+                                </span>
+                            </div>
+                            <% }) %>
+                </div>
+
+                <% if (isConfigured) { %>
+                    <a href="/" class="btn btn-ghost btn-sm" id="backToAppBtn">← Back to App</a>
+                    <% } %>
+
+                        <div class="completion-chip <%= completion===100 ? 'complete' : '' %>">
+                            <%= completion===100 ? '✅ All Set' : `${completion}% Done` %>
+                        </div>
+
+                        <!-- Token actions -->
+                        <div class="token-mini">
+                            <button class="token-copy-btn" id="copyTokenBtn" title="Copy admin token">📋 Token</button>
+                            <code class="token-val-hidden"
+                                id="adminTokenDisplay"><%= cfg.setup?.adminToken || '—' %></code>
+                        </div>
+                        <button class="btn-regen-sm" id="regenTokenBtn" title="Regenerate access token">🔄</button>
+            </div>
+        </header>
+
+        <!-- ── Tab Navigation ─────────────────────────────────── -->
+        <% const tabs=[ { id: 'app' , icon: '⚙️' , label: 'Application' , sub: 'Port · URL · Session' }, {
+            id: 'firebase' , icon: '🔥' , label: 'Firebase' , sub: 'Auth + Admin SDK' }, { id: 'razorpay' , icon: '💳' ,
+            label: 'Razorpay' , sub: 'Payments · Webhooks' }, { id: 'cloudinary' ,icon: '☁️' , label: 'Cloudinary' ,
+            sub: 'Media Storage' }, { id: 'gemini' , icon: '🤖' , label: 'Gemini AI' , sub: 'AI Engine' }, {
+            id: 'company' , icon: '🏢' , label: 'Company' , sub: 'About · Legal · Contact' }, ]; %>
+
+            <nav class="setup-tabs" role="tablist" aria-label="Configuration sections">
+                <% tabs.forEach((tab, i)=> { %>
+                    <button class="setup-tab <%= i === 0 ? 'active' : '' %>" id="tab-<%= tab.id %>" role="tab"
+                        aria-controls="section-<%= tab.id %>" aria-selected="<%= i === 0 ? 'true' : 'false' %>"
+                        data-tab="<%= tab.id %>">
+                        <span class="tab-icon">
+                            <%= tab.icon %>
+                        </span>
+                        <div class="tab-text">
+                            <span class="tab-label">
+                                <%= tab.label %>
+                            </span>
+                            <span class="tab-sub">
+                                <%= tab.sub %>
+                            </span>
+                        </div>
+                        <span
+                            class="tab-status-dot <%= cfg.setup?.configuredSections?.[tab.id] ? 'dot-done' : 'dot-pending' %>"
+                            id="tab-status-<%= tab.id %>"></span>
+                    </button>
+                    <% }) %>
+            </nav>
+
+            <!-- ── Content Area ───────────────────────────────────── -->
+            <main class="setup-main">
+
+                <!-- Info Banner (first time) -->
+                <% if (!isConfigured) { %>
+                    <div class="info-banner" id="welcomeBanner">
+                        <div class="banner-icon">🎉</div>
+                        <div>
+                            <strong>Welcome to EmbassyAI Setup!</strong>
+                            <p>Fill in each tab below. Credentials are encrypted with AES-256-GCM and stored in MongoDB.
+                                Only your MongoDB connection string stays in <code>.env</code>.</p>
+                        </div>
+                        <button class="banner-close" id="closeBanner" aria-label="Dismiss">✕</button>
+                    </div>
+                    <% } %>
+
+                        <!-- Tab Panels -->
+                        <div class="tab-panels">
+                            <%- include('./partials/tab-app') %>
+                                <%- include('./partials/tab-firebase') %>
+                                    <%- include('./partials/tab-razorpay') %>
+                                        <%- include('./partials/tab-cloudinary') %>
+                                            <%- include('./partials/tab-gemini') %>
+                                                <%- include('./partials/tab-company') %>
+                        </div>
+
+                        <!-- All-done banner -->
+                        <% if (completion===100) { %>
+                            <div class="all-done-banner">
+                                <div class="done-icon">🎉</div>
+                                <div>
+                                    <h2>All Configured!</h2>
+                                    <p>EmbassyAI is fully configured and ready to run. All credentials are encrypted in
+                                        MongoDB.</p>
+                                </div>
+                                <a href="/" class="btn btn-primary btn-lg" id="launchAppBtn">Launch App →</a>
+                            </div>
+                            <% } %>
+
+                                <!-- Security note -->
+                                <div class="security-note">
+                                    <span class="lock-icon">🔒</span>
+                                    <span>All secrets are encrypted with <strong>AES-256-GCM</strong> before storage.
+                                        Your MongoDB stores only
+                                        ciphertext — even direct DB access won't reveal your credentials without the
+                                        encryption key.</span>
+                                </div>
+
+            </main>
+    </div>
+
+    <!-- Toast container -->
+    <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+    <script src="/js/setup-admin.js" defer></script>
+</body>
+
+</html>

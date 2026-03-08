@@ -1,0 +1,680 @@
+<!-- Profile Page -->
+<% layout('layouts/dashboard') %>
+
+    <% const displayName=user?.displayName || 'User' ; const email=user?.email || '' ; const
+        initials=displayName.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+    const totalInterviews = user?.totalInterviews || 0;
+    const avgScore = Math.round(user?.averageScore || 0);
+    const hasPhoto = !!(profile?.profilePhoto?.url);
+    const firstName = profile?.firstName || '';
+    const lastName = profile?.lastName || '';
+    const phone = profile?.phone || '';
+    const nationality = profile?.nationality || '';
+    const passportNum = profile?.passportNumber || '';
+    const passportExp = profile?.passportExpiry ? new Date(profile.passportExpiry).toISOString().split(' T')[0] : '' ;
+        const bio=profile?.bio || '' ; const targetCountry=profile?.targetCountry || 'USA' ; const
+        visaType=profile?.visaType || 'Student' ; const countryList=['USA', 'Canada' , 'UK' , 'Australia' , 'Germany' ];
+        const visaList=['Student', 'Tourist' , 'Work' , 'Business' , 'Family' ]; %>
+
+        <div class="pro-page">
+
+            <!-- ── Left sidebar ───────────────────────────────────── -->
+            <aside class="pro-sidebar">
+
+                <!-- Avatar card -->
+                <div class="pro-avatar-card glass-card animate-fade-in">
+                    <div class="pro-photo-wrap">
+                        <% if (hasPhoto) { %>
+                            <img src="<%= profile.profilePhoto.url %>" alt="Profile Photo" class="pro-photo" />
+                            <% } else { %>
+                                <div class="pro-avatar-initials">
+                                    <%= initials %>
+                                </div>
+                                <% } %>
+                                    <label for="photoUpload" class="pro-photo-edit" title="Change photo">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.5">
+                                            <path
+                                                d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" />
+                                            <circle cx="12" cy="13" r="4" />
+                                        </svg>
+                                    </label>
+                                    <input type="file" id="photoUpload" accept="image/*" style="display:none" />
+                    </div>
+
+                    <div class="pro-identity">
+                        <h3 class="pro-name">
+                            <%= displayName %>
+                        </h3>
+                        <p class="pro-email">
+                            <%= email %>
+                        </p>
+                    </div>
+
+                    <div class="pro-stats-row">
+                        <div class="pro-stat">
+                            <span class="pro-stat-val">
+                                <%= totalInterviews %>
+                            </span>
+                            <span class="pro-stat-lbl">Interviews</span>
+                        </div>
+                        <div class="pro-stat-sep"></div>
+                        <div class="pro-stat">
+                            <span class="pro-stat-val" style="color:var(--accent)">
+                                <%= avgScore %>
+                            </span>
+                            <span class="pro-stat-lbl">Avg Score</span>
+                        </div>
+                    </div>
+
+                    <div class="pro-quick-links">
+                        <a href="/dashboard" class="pro-quick-link">
+                            <span>&#128202;</span> Dashboard
+                        </a>
+                        <a href="/dashboard/analytics" class="pro-quick-link">
+                            <span>&#128200;</span> Analytics
+                        </a>
+                        <a href="/subscription" class="pro-quick-link">
+                            <span>&#127775;</span> Subscription
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Resume card -->
+                <div class="pro-resume-card glass-card animate-fade-in-up">
+                    <div class="pro-section-head">
+                        <span class="pro-section-icon">&#128196;</span>
+                        <h4>Resume</h4>
+                    </div>
+                    <% if (resume) { %>
+                        <div class="pro-resume-current">
+                            <div class="pro-resume-icon">&#128462;</div>
+                            <div class="pro-resume-info">
+                                <p class="pro-resume-name">
+                                    <%= resume.originalName %>
+                                </p>
+                                <a href="<%= resume.url %>" target="_blank" class="pro-resume-view">View PDF &#8599;</a>
+                            </div>
+                        </div>
+                        <% } else { %>
+                            <div class="pro-resume-empty">
+                                <div class="pro-resume-empty-icon">&#128462;</div>
+                                <p>No resume uploaded yet</p>
+                            </div>
+                            <% } %>
+                                <label for="resumeUpload" class="btn btn-ghost btn-full pro-resume-btn">
+                                    <%- resume ? '&#128260; Replace Resume' : '&#128228; Upload Resume (PDF)' %>
+                                </label>
+                                <input type="file" id="resumeUpload" accept="application/pdf" style="display:none" />
+                                <p class="pro-resume-hint">PDF only &middot; Max 10MB &middot; Used by AI for contextual
+                                    questions</p>
+                </div>
+            </aside>
+
+            <!-- ── Right: Edit Form ────────────────────────────────── -->
+            <div class="pro-form-area animate-fade-in">
+
+                <!-- Personal info -->
+                <div class="pro-form-card glass-card">
+                    <div class="pro-card-header">
+                        <span class="pro-card-icon">&#128100;</span>
+                        <div>
+                            <h3>Personal Information</h3>
+                            <p>Update your basic details used across interviews.</p>
+                        </div>
+                    </div>
+                    <form id="profileForm" class="pro-form">
+                        <div class="pro-row2">
+                            <div class="form-group">
+                                <label class="form-label">First Name</label>
+                                <input type="text" class="form-input" name="firstName" value="<%= firstName %>"
+                                    placeholder="John" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Last Name</label>
+                                <input type="text" class="form-input" name="lastName" value="<%= lastName %>"
+                                    placeholder="Doe" />
+                            </div>
+                        </div>
+
+                        <div class="pro-row2">
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input type="tel" class="form-input" name="phone" value="<%= phone %>"
+                                    placeholder="+91 98765 43210" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nationality</label>
+                                <input type="text" class="form-input" name="nationality" value="<%= nationality %>"
+                                    placeholder="Indian" />
+                            </div>
+                        </div>
+
+                        <div class="pro-row2">
+                            <div class="form-group">
+                                <label class="form-label">Passport Number</label>
+                                <input type="text" class="form-input" name="passportNumber" value="<%= passportNum %>"
+                                    placeholder="A1234567" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Passport Expiry</label>
+                                <input type="date" class="form-input" name="passportExpiry"
+                                    value="<%= passportExp %>" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Bio / Statement of Purpose
+                                <span class="form-label-hint">Helps AI tailor questions to your story</span>
+                            </label>
+                            <textarea class="form-input" name="bio" rows="4"
+                                placeholder="Briefly describe your purpose, background, and intentions..."><%= bio %></textarea>
+                        </div>
+
+                        <div class="pro-save-bar">
+                            <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+                                &#128190; Save Personal Info
+                            </button>
+                            <span class="pro-save-status" id="profileSaveStatus"></span>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Interview preferences -->
+                <div class="pro-form-card glass-card">
+                    <div class="pro-card-header">
+                        <span class="pro-card-icon">&#127908;</span>
+                        <div>
+                            <h3>Interview Preferences</h3>
+                            <p>Set default country and visa type for new interviews.</p>
+                        </div>
+                    </div>
+                    <form id="prefsForm" class="pro-form">
+                        <div class="pro-row2">
+                            <div class="form-group">
+                                <label class="form-label">Target Country</label>
+                                <select class="form-select" name="targetCountry">
+                                    <% for (var ci=0; ci < countryList.length; ci++) { var c=countryList[ci]; %>
+                                        <option value="<%= c %>" <%=c===targetCountry ? 'selected' : '' %>><%= c %>
+                                        </option>
+                                        <% } %>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Visa Type</label>
+                                <select class="form-select" name="visaType">
+                                    <% for (var vi=0; vi < visaList.length; vi++) { var v=visaList[vi]; %>
+                                        <option value="<%= v %>" <%=v===visaType ? 'selected' : '' %>><%= v %> Visa
+                                        </option>
+                                        <% } %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pro-save-bar">
+                            <button type="submit" class="btn btn-primary" id="savePrefsBtn">
+                                &#128190; Save Preferences
+                            </button>
+                            <span class="pro-save-status" id="prefsSaveStatus"></span>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <style>
+            /* ── Profile Page Layout ──────────────────────────── */
+            .pro-page {
+                display: grid;
+                grid-template-columns: 300px 1fr;
+                gap: var(--sp-6);
+                align-items: start;
+            }
+
+            .pro-sidebar {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-4);
+                position: sticky;
+                top: var(--sp-4);
+            }
+
+            /* Avatar card */
+            .pro-avatar-card {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: var(--sp-4);
+                padding: var(--sp-8) var(--sp-6);
+                text-align: center;
+            }
+
+            .pro-photo-wrap {
+                position: relative;
+                width: 100px;
+                height: 100px;
+            }
+
+            .pro-photo {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 3px solid var(--border);
+            }
+
+            .pro-avatar-initials {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, var(--accent), var(--purple));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 2.2rem;
+                font-weight: var(--fw-bold);
+                color: #fff;
+                letter-spacing: -1px;
+            }
+
+            .pro-photo-edit {
+                position: absolute;
+                bottom: 2px;
+                right: 2px;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background: var(--accent);
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                border: 2px solid var(--bg);
+                transition: var(--transition);
+            }
+
+            .pro-photo-edit:hover {
+                background: var(--accent-dark);
+                transform: scale(1.1);
+            }
+
+            .pro-identity {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-1);
+            }
+
+            .pro-name {
+                font-size: var(--text-lg);
+                font-weight: var(--fw-bold);
+                color: var(--text-primary);
+            }
+
+            .pro-email {
+                font-size: var(--text-sm);
+                color: var(--text-muted);
+            }
+
+            .pro-stats-row {
+                display: flex;
+                align-items: center;
+                gap: var(--sp-6);
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                padding: var(--sp-3) var(--sp-6);
+                width: 100%;
+                justify-content: center;
+            }
+
+            .pro-stat {
+                text-align: center;
+            }
+
+            .pro-stat-val {
+                display: block;
+                font-size: var(--text-2xl);
+                font-weight: var(--fw-extrabold);
+                color: var(--text-primary);
+                line-height: 1;
+            }
+
+            .pro-stat-lbl {
+                display: block;
+                font-size: var(--text-xs);
+                color: var(--text-muted);
+                margin-top: 3px;
+            }
+
+            .pro-stat-sep {
+                width: 1px;
+                height: 36px;
+                background: var(--border);
+            }
+
+            .pro-quick-links {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-1);
+                width: 100%;
+            }
+
+            .pro-quick-link {
+                display: flex;
+                align-items: center;
+                gap: var(--sp-3);
+                padding: var(--sp-2) var(--sp-3);
+                border-radius: var(--radius);
+                font-size: var(--text-sm);
+                color: var(--text-secondary);
+                text-decoration: none;
+                transition: var(--transition);
+            }
+
+            .pro-quick-link:hover {
+                background: var(--surface);
+                color: var(--text-primary);
+            }
+
+            /* Resume card */
+            .pro-resume-card {
+                padding: var(--sp-5) var(--sp-6);
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-3);
+            }
+
+            .pro-section-head {
+                display: flex;
+                align-items: center;
+                gap: var(--sp-2);
+                margin-bottom: var(--sp-1);
+            }
+
+            .pro-section-icon {
+                font-size: 1.2rem;
+            }
+
+            .pro-section-head h4 {
+                font-weight: var(--fw-bold);
+            }
+
+            .pro-resume-current {
+                display: flex;
+                align-items: center;
+                gap: var(--sp-3);
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius);
+                padding: var(--sp-3);
+            }
+
+            .pro-resume-icon {
+                font-size: 1.5rem;
+                flex-shrink: 0;
+            }
+
+            .pro-resume-info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .pro-resume-name {
+                font-size: var(--text-sm);
+                font-weight: var(--fw-medium);
+                color: var(--text-primary);
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .pro-resume-view {
+                font-size: var(--text-xs);
+                color: var(--accent);
+                text-decoration: none;
+            }
+
+            .pro-resume-view:hover {
+                text-decoration: underline;
+            }
+
+            .pro-resume-empty {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: var(--sp-2);
+                padding: var(--sp-4);
+                border: 2px dashed var(--border);
+                border-radius: var(--radius);
+                text-align: center;
+                color: var(--text-muted);
+                font-size: var(--text-sm);
+            }
+
+            .pro-resume-empty-icon {
+                font-size: 1.8rem;
+                opacity: 0.4;
+            }
+
+            .pro-resume-btn {
+                cursor: pointer;
+            }
+
+            .pro-resume-hint {
+                font-size: 11px;
+                color: var(--text-muted);
+            }
+
+            /* Form area */
+            .pro-form-area {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-5);
+            }
+
+            .pro-form-card {
+                padding: var(--sp-8) var(--sp-10);
+            }
+
+            .pro-card-header {
+                display: flex;
+                align-items: flex-start;
+                gap: var(--sp-6);
+                margin-bottom: var(--sp-10);
+                padding-bottom: var(--sp-6);
+                border-bottom: 1px solid var(--border);
+            }
+
+            .pro-card-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: var(--radius);
+                background: rgba(99, 102, 241, 0.1);
+                border: 1px solid rgba(99, 102, 241, 0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+                flex-shrink: 0;
+            }
+
+            .pro-card-header h3 {
+                font-weight: var(--fw-bold);
+                margin-bottom: 2px;
+            }
+
+            .pro-card-header p {
+                font-size: var(--text-sm);
+                color: var(--text-muted);
+            }
+
+            .pro-form {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-8);
+            }
+
+            .pro-row2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: var(--sp-8);
+            }
+
+            .form-label-hint {
+                font-size: var(--text-xs);
+                color: var(--text-muted);
+                font-weight: var(--fw-normal);
+                margin-left: var(--sp-2);
+            }
+
+            .pro-save-bar {
+                display: flex;
+                align-items: center;
+                gap: var(--sp-4);
+                padding-top: var(--sp-2);
+            }
+
+            .pro-save-status {
+                font-size: var(--text-sm);
+                color: var(--success);
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            .pro-save-status.visible {
+                opacity: 1;
+            }
+
+            @media(max-width:900px) {
+                .pro-page {
+                    grid-template-columns: 1fr;
+                }
+
+                .pro-sidebar {
+                    position: static;
+                }
+            }
+
+            @media(max-width:600px) {
+                .pro-row2 {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Profile form save
+                var profileForm = document.getElementById('profileForm');
+                if (profileForm) {
+                    profileForm.addEventListener('submit', async function (e) {
+                        e.preventDefault();
+                        var btn = document.getElementById('saveProfileBtn');
+                        var status = document.getElementById('profileSaveStatus');
+                        btn.textContent = 'Saving...';
+                        btn.disabled = true;
+                        var data = Object.fromEntries(new FormData(this));
+                        try {
+                            var res = await fetch('/api/profile', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(data),
+                                credentials: 'include'
+                            });
+                            var json = await res.json();
+                            if (json.success) {
+                                status.textContent = '✓ Saved!';
+                                status.classList.add('visible');
+                                setTimeout(function () { status.classList.remove('visible'); }, 3000);
+                            } else {
+                                alert('Error: ' + (json.message || 'Save failed'));
+                            }
+                        } catch (err) {
+                            alert('Network error: ' + err.message);
+                        } finally {
+                            btn.textContent = '💾 Save Personal Info';
+                            btn.disabled = false;
+                        }
+                    });
+                }
+
+                // Preferences form save
+                var prefsForm = document.getElementById('prefsForm');
+                if (prefsForm) {
+                    prefsForm.addEventListener('submit', async function (e) {
+                        e.preventDefault();
+                        var btn = document.getElementById('savePrefsBtn');
+                        var status = document.getElementById('prefsSaveStatus');
+                        btn.textContent = 'Saving...';
+                        btn.disabled = true;
+                        var data = Object.fromEntries(new FormData(this));
+                        try {
+                            var res = await fetch('/api/profile', {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(data),
+                                credentials: 'include'
+                            });
+                            var json = await res.json();
+                            if (json.success) {
+                                status.textContent = '✓ Saved!';
+                                status.classList.add('visible');
+                                setTimeout(function () { status.classList.remove('visible'); }, 3000);
+                            } else {
+                                alert('Error: ' + (json.message || 'Save failed'));
+                            }
+                        } catch (err) {
+                            alert('Network error: ' + err.message);
+                        } finally {
+                            btn.textContent = '💾 Save Preferences';
+                            btn.disabled = false;
+                        }
+                    });
+                }
+
+                // Photo upload
+                var photoInput = document.getElementById('photoUpload');
+                if (photoInput) {
+                    photoInput.addEventListener('change', async function () {
+                        if (!this.files[0]) return;
+                        var form = new FormData();
+                        form.append('photo', this.files[0]);
+                        try {
+                            var res = await fetch('/api/profile/photo', {
+                                method: 'POST',
+                                body: form,
+                                credentials: 'include'
+                            });
+                            var json = await res.json();
+                            if (json.success) location.reload();
+                            else alert('Photo upload failed: ' + json.message);
+                        } catch (err) {
+                            alert('Upload error: ' + err.message);
+                        }
+                    });
+                }
+
+                // Resume upload
+                var resumeInput = document.getElementById('resumeUpload');
+                if (resumeInput) {
+                    resumeInput.addEventListener('change', async function () {
+                        if (!this.files[0]) return;
+                        var form = new FormData();
+                        form.append('resume', this.files[0]);
+                        try {
+                            var res = await fetch('/api/profile/resume', {
+                                method: 'POST',
+                                body: form,
+                                credentials: 'include'
+                            });
+                            var json = await res.json();
+                            if (json.success) location.reload();
+                            else alert('Resume upload failed: ' + json.message);
+                        } catch (err) {
+                            alert('Upload error: ' + err.message);
+                        }
+                    });
+                }
+            });
+        </script>

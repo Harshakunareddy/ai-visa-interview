@@ -1,0 +1,259 @@
+<!-- Subscription / Pricing Page (Dashboard) -->
+<% layout(locals.user ? 'layouts/dashboard' : 'layouts/main' ) %>
+    <div class="pricing-page">
+        <div class="pricing-header glass-card animate-fade-in"
+            style="padding:var(--sp-8);text-align:center;margin-bottom:var(--sp-6);">
+            <% if (currentSub) { %>
+                <div class="current-plan-badge plan-<%= currentSub.plan %>">
+                    Current Plan: <strong>
+                        <%= currentSub.plan.toUpperCase() %>
+                    </strong>
+                    <% if (currentSub.currentPeriodEnd) { %> · Expires <%= new
+                            Date(currentSub.currentPeriodEnd).toLocaleDateString() %>
+                            <% } %>
+                </div>
+                <% } %>
+                    <h2 style="margin-top:var(--sp-4)">Choose Your Plan</h2>
+                    <p>Unlock more interviews, advanced analytics, and AI features</p>
+
+                    <% if (locals.upgradeReq) { %>
+                        <div class="upgrade-alert animate-shake"
+                            style="margin-top: var(--sp-6); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: var(--sp-4); border-radius: var(--br-lg); color: #ef4444; display: flex; align-items: center; justify-content: center; gap: var(--sp-3);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>
+                                <%= locals.message || 'Please upgrade to continue' %>
+                            </span>
+                        </div>
+                        <% } %>
+        </div>
+
+        <div class="pricing-cards">
+            <!-- Free -->
+            <div class="pricing-card glass-card animate-fade-in">
+                <div class="pc-header">
+                    <p class="pc-name">Free Trial</p>
+                    <p class="pc-price"><span class="pc-amount">₹0</span></p>
+                    <p class="pc-duration">Forever free</p>
+                </div>
+                <ul class="pc-features">
+                    <li>✅ 1 Free Interview</li>
+                    <li>✅ Basic AI Evaluation</li>
+                    <li>✅ Approval Probability</li>
+                    <li>❌ Video Recording</li>
+                    <li>❌ Eye Tracking</li>
+                    <li>❌ Advanced Analytics</li>
+                </ul>
+                <% if (currentSub && currentSub.plan==='free' ) { %>
+                    <div class="btn btn-ghost btn-full" style="text-align:center;cursor:default">Current Plan</div>
+                    <% } else { %>
+                        <a href="/interview" class="btn btn-ghost btn-full">Start Free →</a>
+                        <% } %>
+            </div>
+
+            <!-- Monthly -->
+            <div class="pricing-card glass-card popular animate-fade-in-up delay-1">
+                <div class="popular-badge">⭐ Most Popular</div>
+                <div class="pc-header">
+                    <p class="pc-name">Monthly</p>
+                    <p class="pc-price"><span class="pc-amount">₹499</span><span class="pc-period">/month</span></p>
+                    <p class="pc-duration">Billed monthly</p>
+                </div>
+                <ul class="pc-features">
+                    <li>✅ 30 Interviews/Month</li>
+                    <li>✅ Full AI Evaluation</li>
+                    <li>✅ Video Recording</li>
+                    <li>✅ Eye Contact Tracking</li>
+                    <li>✅ Nervousness Analysis</li>
+                    <li>✅ Resume Upload</li>
+                    <li>✅ Advanced Analytics</li>
+                </ul>
+                <% if (currentSub && currentSub.plan==='monthly' ) { %>
+                    <div class="btn btn-primary btn-full" style="text-align:center;cursor:default;opacity:0.7">Current
+                        Plan
+                    </div>
+                    <% } else { %>
+                        <button class="btn btn-primary btn-full" id="monthlyPayBtn" data-plan="monthly">Upgrade Monthly
+                            →</button>
+                        <% } %>
+            </div>
+
+            <!-- Yearly -->
+            <div class="pricing-card glass-card animate-fade-in-up delay-2">
+                <div class="pc-header">
+                    <p class="pc-name">Yearly</p>
+                    <p class="pc-price"><span class="pc-amount">₹3,999</span><span class="pc-period">/year</span></p>
+                    <p class="pc-duration">Save ₹1,989 vs monthly</p>
+                </div>
+                <ul class="pc-features">
+                    <li>✅ Unlimited Interviews</li>
+                    <li>✅ All Monthly Features</li>
+                    <li>✅ Priority AI Queue</li>
+                    <li>✅ 5 Countries Support</li>
+                    <li>✅ Advanced Analytics</li>
+                    <li>✅ Email Support</li>
+                    <li>✅ Early Access Features</li>
+                </ul>
+                <% if (currentSub && currentSub.plan==='yearly' ) { %>
+                    <div class="btn btn-ghost btn-full" style="text-align:center;cursor:default">Current Plan</div>
+                    <% } else { %>
+                        <button class="btn btn-ghost btn-full" id="yearlyPayBtn" data-plan="yearly">Upgrade Yearly
+                            →</button>
+                        <% } %>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .pricing-page {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--sp-5);
+        }
+
+        .pricing-card {
+            padding: var(--sp-6);
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-4);
+            position: relative;
+        }
+
+        .pricing-card.popular {
+            border-color: var(--accent);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: #fff;
+            padding: 4px var(--sp-4);
+            border-radius: 999px;
+            font-size: var(--text-xs);
+            font-weight: var(--fw-bold);
+            white-space: nowrap;
+        }
+
+        .pc-name {
+            font-size: var(--text-lg);
+            font-weight: var(--fw-bold);
+        }
+
+        .pc-price {
+            margin-top: var(--sp-2);
+        }
+
+        .pc-amount {
+            font-size: var(--text-4xl);
+            font-weight: var(--fw-extrabold);
+            color: var(--text-primary);
+        }
+
+        .pc-period {
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+        }
+
+        .pc-duration {
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            margin-top: var(--sp-1);
+        }
+
+        .pc-features {
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-2);
+            flex: 1;
+        }
+
+        .pc-features li {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+        }
+
+        .current-plan-badge {
+            display: inline-block;
+            padding: var(--sp-2) var(--sp-4);
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 999px;
+            font-size: var(--text-sm);
+            color: var(--accent-light);
+        }
+
+        @media(max-width:768px) {
+            .pricing-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        const RAZORPAY_KEY = '<%= razorpayKey %>';
+
+        async function handlePayment(plan) {
+            try {
+                const res = await fetch('/api/subscription/create-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ plan }),
+                    credentials: 'include',
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message);
+
+                const opts = {
+                    key: RAZORPAY_KEY,
+                    amount: data.data.amount,
+                    currency: data.data.currency,
+                    name: 'AI',
+                    description: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Subscription`,
+                    order_id: data.data.orderId,
+                    handler: async function (response) {
+                        const verifyRes = await fetch('/api/subscription/verify-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                plan,
+                            }),
+                            credentials: 'include',
+                        });
+                        const verifyData = await verifyRes.json();
+                        if (verifyData.success) {
+                            alert('🎉 Subscription activated! Enjoy AI.');
+                            location.reload();
+                        } else {
+                            alert('Payment verification failed. Contact support.');
+                        }
+                    },
+                    theme: { color: '#6366f1' },
+                };
+                const rzp = new Razorpay(opts);
+                rzp.on('payment.failed', () => alert('Payment failed. Please try again.'));
+                rzp.open();
+            } catch (err) {
+                alert('⚠️ ' + err.message);
+            }
+        }
+
+        document.getElementById('monthlyPayBtn')?.addEventListener('click', () => handlePayment('monthly'));
+        document.getElementById('yearlyPayBtn')?.addEventListener('click', () => handlePayment('yearly'));
+    </script>

@@ -1,0 +1,72 @@
+<%# ══════════════ TAB: Company Settings ══════════════ %>
+    <section class="config-section" id="section-company" data-section="company">
+        <div class="section-header">
+            <div class="section-title-row">
+                <span class="section-icon">🏢</span>
+                <div>
+                    <h2>Company & Legal</h2>
+                    <p>Manage your company details, contact information, and legal policies.</p>
+                </div>
+            </div>
+            <span class="section-badge <%= cfg.setup?.configuredSections?.company ? 'done' : 'pending' %>" id="badge-company">
+                <%= cfg.setup?.configuredSections?.company ? '✓ Configured' : 'Not Set' %>
+            </span>
+        </div>
+
+        <div class="config-grid">
+            <div class="config-field">
+                <label>Company Name</label>
+                <input type="text" name="name" value="<%= cfg.company?.name || 'AI' %>" placeholder="AI" />
+                <small>The name of your application/company</small>
+            </div>
+            <div class="config-field">
+                <label>Contact Email</label>
+                <input type="email" name="contactEmail" value="<%= cfg.company?.contactEmail || '' %>" placeholder="support@yourdomain.com" />
+                <small>Support email shown to users</small>
+            </div>
+            <div class="config-field">
+                <label>Contact Phone</label>
+                <input type="text" name="contactPhone" value="<%= cfg.company?.contactPhone || '' %>" placeholder="+1 (555) 000-0000" />
+                <small>Support phone number</small>
+            </div>
+            <div class="config-field col-2">
+                <label>Office Address</label>
+                <input type="text" name="address" value="<%= cfg.company?.address || '' %>" placeholder="123 tech St, Silicon Valley, CA" />
+                <small>Physical address for footer/contact</small>
+            </div>
+            
+            <div class="config-field col-2">
+                <label>Footer Tagline</label>
+                <input type="text" name="description" value="<%= cfg.company?.description || '' %>" placeholder="Ace your visa interview with AI practice." />
+                <small>Shown in the footer brand section</small>
+            </div>
+
+            <div class="config-field col-2">
+                <label>About Content</label>
+                <textarea name="aboutContent" rows="4" placeholder="Describe your company..."><%= cfg.company?.aboutContent || '' %></textarea>
+                <small>Full about text for the /about page</small>
+            </div>
+
+            <div class="config-field col-2">
+                <label>Privacy Policy</label>
+                <textarea name="privacyPolicy" rows="6" placeholder="Your privacy policy text..."><%= cfg.company?.privacyPolicy || '' %></textarea>
+                <small>Full privacy policy content</small>
+            </div>
+
+            <div class="config-field col-2">
+                <label>Terms of Service</label>
+                <textarea name="termsOfService" rows="6" placeholder="Your terms of service text..."><%= cfg.company?.termsOfService || '' %></textarea>
+                <small>Full terms and conditions</small>
+            </div>
+
+            <div class="config-field col-2">
+                <label>Legal Notice / Disclaimer</label>
+                <textarea name="legalNotice" rows="3" placeholder="Additional legal disclaimers..."><%= cfg.company?.legalNotice || '' %></textarea>
+                <small>General legal disclaimer (optional)</small>
+            </div>
+        </div>
+
+        <div class="section-actions">
+            <button class="btn btn-primary save-section-btn" data-section="company">💾 Save Company Details</button>
+        </div>
+    </section>

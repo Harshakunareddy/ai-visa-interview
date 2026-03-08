@@ -1,0 +1,166 @@
+<!-- DASHBOARD HOME -->
+<% layout('layouts/dashboard') %>
+    <div class="dashboard-page">
+
+        <!-- Welcome Banner -->
+        <div class="welcome-banner glass-card animate-fade-in">
+            <div class="welcome-text">
+                <h2>Welcome back, <%= user ? user.displayName.split(' ')[0] : ' there' %>! 👋</h2>
+                <p>Ready to practice your visa interview? Your AI embassy officer is waiting.</p>
+            </div>
+            <a href="/interview" class="btn btn-primary btn-lg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                </svg>
+                Start Interview
+            </a>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid animate-fade-in-up">
+            <div class="stat-card glass-card">
+                <div class="stat-icon icon-blue">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <p class="stat-label">Total Interviews</p>
+                    <p class="stat-value">
+                        <%= analytics.totalInterviews || 0 %>
+                    </p>
+                </div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-icon icon-green">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22,12 18,12 15,21 9,3 6,12 2,12" />
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <p class="stat-label">Avg. Score</p>
+                    <p class="stat-value">
+                        <%= Math.round(analytics.avgScore || 0) %><span class="stat-unit">/100</span>
+                    </p>
+                </div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-icon icon-purple">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                        <polyline points="22,4 12,14.01 9,11.01" />
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <p class="stat-label">Approval Rate</p>
+                    <p class="stat-value">
+                        <%= Math.round(analytics.avgApproval || 0) %><span class="stat-unit">%</span>
+                    </p>
+                </div>
+            </div>
+            <div class="stat-card glass-card">
+                <div class="stat-icon icon-orange">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                </div>
+                <div class="stat-info">
+                    <p class="stat-label">Confidence</p>
+                    <p class="stat-value">
+                        <%= Math.round(analytics.avgConfidence || 0) %><span class="stat-unit">/100</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Score Timeline Chart -->
+        <% if (timeline && timeline.length> 0) { %>
+            <div class="chart-section glass-card animate-fade-in-up">
+                <div class="chart-header">
+                    <h3>Score Timeline</h3>
+                    <a href="/dashboard/analytics" class="btn btn-ghost btn-sm">View Full Analytics →</a>
+                </div>
+                <canvas id="timelineChart"></canvas>
+            </div>
+            <% } %>
+
+                <!-- Recent Interviews -->
+                <div class="recent-section animate-fade-in-up">
+                    <div class="section-header-row">
+                        <h3>Recent Interviews</h3>
+                        <a href="/dashboard/analytics" class="btn btn-ghost btn-sm">View All</a>
+                    </div>
+                    <% if (recentSessions && recentSessions.length> 0) { %>
+                        <div class="interviews-list">
+                            <% recentSessions.forEach(function(s) { %>
+                                <div class="interview-row glass-card">
+                                    <div class="interview-info">
+                                        <div class="interview-flag">
+                                            <% const
+                                                flags={USA:'🇺🇸',Canada:'🇨🇦',UK:'🇬🇧',Australia:'🇦🇺',Germany:'🇩🇪'};
+                                                %>
+                                                <%= flags[s.targetCountry] || '🌍' %>
+                                        </div>
+                                        <div>
+                                            <p class="interview-title">
+                                                <%= s.targetCountry %> · <%= s.visaType %> Visa
+                                            </p>
+                                            <p class="interview-date">
+                                                <%= new Date(s.createdAt).toLocaleDateString('en-US',
+                                                    {day:'numeric',month:'short',year:'numeric'}) %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="interview-scores-row">
+                                        <div class="mini-score">
+                                            <span class="score-label">Score</span>
+                                            <span class="score-num">
+                                                <%= Math.round(s.scores?.overall || 0) %>
+                                            </span>
+                                        </div>
+                                        <div class="mini-score">
+                                            <span class="score-label">Approval</span>
+                                            <span class="score-num approval">
+                                                <%= Math.round(s.decision?.approvalProbability || 0) %>%
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div
+                                        class="interview-verdict verdict-<%= (s.decision?.verdict || 'Pending').toLowerCase().replace(/\s+/g,'_') %>">
+                                        <%= s.decision?.verdict || 'Pending' %>
+                                    </div>
+                                    <a href="/interview/<%= s.sessionId %>/results" class="btn btn-ghost btn-sm">View
+                                        →</a>
+                                </div>
+                                <% }); %>
+                        </div>
+                        <% } else { %>
+                            <div class="empty-state glass-card">
+                                <div class="empty-icon">🎤</div>
+                                <h4>No interviews yet</h4>
+                                <p>Start your first AI visa interview to see your results here.</p>
+                                <a href="/interview" class="btn btn-primary">Start First Interview →</a>
+                            </div>
+                            <% } %>
+                </div>
+
+                <!-- Subscription Banner -->
+                <% if (sub && sub.plan==='free' ) { %>
+                    <div class="upgrade-banner glass-card animate-fade-in-up">
+                        <div class="upgrade-content">
+                            <h3>🚀 Unlock Full Access</h3>
+                            <p>Upgrade to get unlimited interviews, video recording, eye tracking, and advanced
+                                analytics.
+                            </p>
+                        </div>
+                        <a href="/subscription" class="btn btn-primary">Upgrade Now →</a>
+                    </div>
+                    <% } %>
+    </div>
+
+    <script>
+        window.timelineData = <%- JSON.stringify(timeline || []) %>;
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="/js/charts.js"></script>

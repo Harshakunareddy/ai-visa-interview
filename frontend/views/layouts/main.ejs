@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="<%= company.name || 'AI' %> — <%= company.description || 'AI-powered visa interview simulator. Practice with a real embassy-style AI officer and boost your approval chances.' %>" />
+  <title>
+    <%= title %>
+  </title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet" />
+
+  <!-- Core CSS -->
+  <link rel="stylesheet" href="/css/variables.css" />
+  <link rel="stylesheet" href="/css/reset.css" />
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="/css/components.css" />
+  <link rel="stylesheet" href="/css/navbar.css" />
+  <link rel="stylesheet" href="/css/footer.css" />
+  <link rel="stylesheet" href="/css/animations.css" />
+
+  <!-- Page-specific CSS -->
+  <% if (typeof pageCSS !=='undefined' ) { %>
+    <link rel="stylesheet" href="/css/<%= pageCSS %>" />
+    <% } %>
+
+      <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+</head>
+
+<body>
+
+  <%- include('../partials/navbar') %>
+
+    <main id="main-content">
+      <%- body %>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+      <!-- Firebase SDK -->
+      <% if (isFirebaseConfigured) { %>
+        <input type="hidden" id="fb-config-data" value='<%- JSON.stringify(firebaseConfig || {}) %>'>
+        <script>
+          try {
+            window.__fbCfg = JSON.parse(document.getElementById('fb-config-data').value);
+          } catch (e) {
+            console.error('Failed to parse Firebase config:', e);
+            window.__fbCfg = {};
+          }
+        </script>
+        <script type="module">
+          import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+          import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+          try {
+            const app = initializeApp(window.__fbCfg);
+            window.__firebaseAuth = getAuth(app);
+          } catch (err) { console.error('Firebase init failed:', err.message); }
+        </script>
+        <% } %>
+
+          <!-- Core JS -->
+          <script src="/js/theme.js"></script>
+          <script src="/js/main.js"></script>
+
+          <% if (typeof pageJS !=='undefined' ) { %>
+            <script src="/js/<%= pageJS %>"></script>
+            <% } %>
+</body>
+
+</html>

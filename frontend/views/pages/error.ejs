@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        <%= statusCode===404 ? '404 — Page Not Found' : "We'll Be Back Soon" %> · AI
+    </title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #080b14;
+            --surface: #0f1422;
+            --border: rgba(255, 255, 255, 0.07);
+            --accent: #6366f1;
+            --accent2: #8b5cf6;
+            --text: #f1f5f9;
+            --muted: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warn: #f59e0b;
+        }
+
+        html,
+        body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* ── Animated background ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% -10%, rgba(99, 102, 241, 0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 80% at 80% 110%, rgba(139, 92, 246, 0.14) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* ── Floating particles ── */
+        .particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(99, 102, 241, 0.6);
+            border-radius: 50%;
+            animation: float linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0) scale(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-10vh) translateX(30px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* ── Page layout ── */
+        .page {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        /* ── Animated icon sphere ── */
+        .icon-sphere {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 40px;
+        }
+
+        .icon-sphere-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(139, 92, 246, 0.2)) border-box;
+            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            animation: spin 8s linear infinite;
+        }
+
+        .icon-sphere-ring:nth-child(2) {
+            inset: 12px;
+            animation-duration: 12s;
+            animation-direction: reverse;
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .icon-sphere-core {
+            position: absolute;
+            inset: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(139, 92, 246, 0.15));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.3);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 12px rgba(99, 102, 241, 0);
+            }
+        }
+
+        /* ── Status badge ── */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .status-badge.maintenance {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #fbbf24;
+        }
+
+        .status-badge.not-found {
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #818cf8;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            animation: blink 1.4s ease-in-out infinite;
+        }
+
+        .maintenance .status-dot {
+            background: #f59e0b;
+        }
+
+        .not-found .status-dot {
+            background: #6366f1;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ── Headline ── */
+        .headline {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .headline .accent {
+            background: linear-gradient(135deg, #818cf8, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtext {
+            font-size: 1.05rem;
+            color: var(--muted);
+            max-width: 440px;
+            line-height: 1.7;
+            margin: 0 auto 40px;
+        }
+
+        /* ── Status cards ── */
+        .status-cards {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .status-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 13px;
+            color: var(--muted);
+            backdrop-filter: blur(10px);
+            transition: border-color 0.2s;
+        }
+
+        .status-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .status-card .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .dot-green {
+            background: #10b981;
+            box-shadow: 0 0 6px #10b981;
+        }
+
+        .dot-yellow {
+            background: #f59e0b;
+            box-shadow: 0 0 6px #f59e0b;
+            animation: blink 1.4s ease-in-out infinite;
+        }
+
+        .dot-red {
+            background: #ef4444;
+            box-shadow: 0 0 6px #ef4444;
+        }
+
+        /* ── Actions ── */
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 48px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            box-shadow: 0 4px 24px rgba(99, 102, 241, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ── Error code watermark ── */
+        .error-watermark {
+            position: fixed;
+            bottom: -20px;
+            right: -20px;
+            z-index: 0;
+            font-size: clamp(120px, 20vw, 240px);
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.02);
+            line-height: 1;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* ── Brand ── */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 48px;
+        }
+
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-icon svg {
+            width: 20px;
+            height: 20px;
+            color: #fff;
+            stroke: currentColor;
+            fill: none;
+        }
+
+        .brand-accent {
+            color: #818cf8;
+        }
+
+        /* ── Footer ── */
+        .footer-note {
+            font-size: 12px;
+            color: var(--muted);
+            opacity: 0.6;
+        }
+
+        /* ── countdown timer ── */
+        .comeback-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .comeback-note svg {
+            width: 14px;
+            height: 14px;
+            opacity: 0.6;
+        }
+
+        /* ── Animated progress bar ── */
+        .repair-bar {
+            width: 220px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 99px;
+            overflow: hidden;
+            margin: 0 auto 32px;
+        }
+
+        .repair-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            border-radius: 99px;
+            animation: progress 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes progress {
+            from {
+                width: 20%;
+            }
+
+            to {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <div class="page">
+        <!-- Brand -->
+        <a href="/" class="brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                    <polyline points="9,22 9,12 15,12 15,22" />
+                </svg>
+            </div>
+            AI
+        </a>
+
+        <% if (statusCode===404) { %>
+
+            <!-- ── 404: Page Not Found ── -->
+            <div class="icon-sphere">
+                <div class="icon-sphere-ring"></div>
+                <div class="icon-sphere-ring"></div>
+                <div class="icon-sphere-core">🗺️</div>
+            </div>
+
+            <span class="status-badge not-found">
+                <span class="status-dot"></span> 404 — Not Found
+            </span>
+
+            <h1 class="headline">This page <span class="accent">doesn't exist</span></h1>
+            <p class="subtext">
+                The page you're looking for may have moved, been deleted, or the link might be wrong.
+            </p>
+
+            <div class="actions">
+                <a href="/" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                    </svg>
+                    Go Home
+                </a>
+                <button onclick="history.back()" class="btn btn-ghost">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15,18 9,12 15,6" />
+                    </svg>
+                    Go Back
+                </button>
+            </div>
+
+            <% } else { %>
+
+                <!-- ── 5xx / General Error: Maintenance Mode ── -->
+                <div class="icon-sphere">
+                    <div class="icon-sphere-ring"></div>
+                    <div class="icon-sphere-ring"></div>
+                    <div class="icon-sphere-core">🛠️</div>
+                </div>
+
+                <span class="status-badge maintenance">
+                    <span class="status-dot"></span> We're on it
+                </span>
+
+                <h1 class="headline">Back <span class="accent">very soon</span></h1>
+                <p class="subtext">
+                    We noticed something needs fixing and our team is already on it.
+                    Your progress and data are safe — we'll be back up shortly.
+                </p>
+
+                <div class="repair-bar">
+                    <div class="repair-bar-fill"></div>
+                </div>
+
+                <!-- System status indicators -->
+                <div class="status-cards">
+                    <div class="status-card">
+                        <span class="dot dot-green"></span>
+                        <span>Data &amp; Sessions</span>
+                    </div>
+                    <div class="status-card">
+                        <span class="dot dot-green"></span>
+                        <span>Authentication</span>
+                    </div>
+                    <div class="status-card">
+                        <span class="dot dot-yellow"></span>
+                        <span>Service Repair</span>
+                    </div>
+                </div>
+
+                <div class="comeback-note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12,6 12,12 16,14" />
+                    </svg>
+                    Page auto-refreshes in <span id="countdown"
+                        style="color:#f1f5f9;font-weight:600;margin:0 4px;">49</span> seconds
+                </div>
+
+                <div class="actions">
+                    <button onclick="window.location.reload()" class="btn btn-primary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="23,4 23,10 17,10" />
+                            <path d="M20.49 15a9 9 0 11-2.12-9.36L23 10" />
+                        </svg>
+                        Refresh Now
+                    </button>
+                    <a href="/" class="btn btn-ghost">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                        Go Home
+                    </a>
+                </div>
+
+                <% } %>
+
+                    <p class="footer-note">AI &copy; <%= new Date().getFullYear() %> &nbsp;·&nbsp; Thank you for
+                            your patience</p>
+    </div>
+
+    <!-- Big watermark number -->
+    <div class="error-watermark">
+        <%= statusCode %>
+    </div>
+
+    <script>
+        // Floating particles
+        const container = document.getElementById('particles');
+        for (let i = 0; i < 18; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            const size = Math.random() * 3 + 1;
+            p.style.cssText = `
+                left: ${Math.random() * 100}%;
+                width: ${size}px; height: ${size}px;
+                animation-delay: ${Math.random() * 10}s;
+                animation-duration: ${8 + Math.random() * 12}s;
+                opacity: ${0.3 + Math.random() * 0.7};
+            `;
+            container.appendChild(p);
+        }
+
+        // Auto-refresh countdown (only on 5xx errors)
+        const countdownEl = document.getElementById('countdown');
+        if (countdownEl) {
+            let secs = 49;
+            const tick = setInterval(() => {
+                secs--;
+                countdownEl.textContent = secs;
+                if (secs <= 0) { clearInterval(tick); window.location.reload(); }
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,163 @@
+<!-- INTERVIEW ROOM -->
+<% layout('layouts/interview') %>
+    <div class="interview-room" id="interviewRoom">
+        <!-- Start Overlay -->
+        <div id="startOverlay" class="start-overlay">
+            <div class="start-card glass-card animate-fade-in">
+                <h2>🎤 Ready to Start?</h2>
+                <p>Welcome to your AI Visa Interview. Click below to begin and enable the audio visa officer.</p>
+                <button id="startInterviewBtn" class="btn btn-primary btn-lg">Begin Interview</button>
+            </div>
+        </div>
+
+
+        <!-- Header bar -->
+        <div class="interview-header">
+            <div class="interview-brand">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                </svg>
+                Embassy<span class="accent">AI</span>
+            </div>
+            <div class="session-info" id="sessionInfo">Loading...</div>
+            <div class="interview-timer-wrap">
+                <div class="timer-ring">
+                    <svg width="60" height="60" viewBox="0 0 60 60">
+                        <circle cx="30" cy="30" r="26" fill="none" stroke="var(--border)" stroke-width="4" />
+                        <circle cx="30" cy="30" r="26" fill="none" stroke="var(--accent)" stroke-width="4"
+                            stroke-dasharray="163" stroke-dashoffset="0" id="timerCircle" stroke-linecap="round"
+                            transform="rotate(-90 30 30)" />
+                    </svg>
+                    <span class="timer-text" id="timerDisplay">5:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="interview-main">
+
+            <!-- Video Panel -->
+            <div class="video-panel">
+                <div class="video-frame">
+                    <video id="userVideo" autoplay muted playsinline class="user-video"></video>
+                    <canvas id="faceCanvas" class="face-canvas"></canvas>
+
+                    <% if (typeof behavioralFeaturesEnabled === 'undefined' || behavioralFeaturesEnabled) { %>
+                    <!-- Behavioral HUD -->
+                    <div class="video-hud">
+                        <div class="hud-item" id="eyeHud">
+                            <span class="hud-label">👁️ Eye</span>
+                            <div class="hud-bar">
+                                <div class="hud-fill" id="eyeFill" style="width:0%"></div>
+                            </div>
+                            <span class="hud-val" id="eyeVal">0%</span>
+                        </div>
+                        <div class="hud-item" id="nervHud">
+                            <span class="hud-label">😌 Calm</span>
+                            <div class="hud-bar">
+                                <div class="hud-fill calm" id="nervFill" style="width:100%"></div>
+                            </div>
+                            <span class="hud-val" id="nervVal">100%</span>
+                        </div>
+                    </div>
+                    <% } %>
+
+
+
+                    <div class="recording-indicator" id="recIndicator" style="display:none">
+                        <span class="rec-dot"></span> REC
+                    </div>
+                </div>
+
+                <!-- Officer Card -->
+                <div class="officer-card glass-card">
+                    <div class="officer-avatar-wrap">
+                        <div class="officer-avatar-large">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
+                                <path d="M6 20v-1a6 6 0 0 1 12 0v1" />
+                            </svg>
+                        </div>
+                        <div class="officer-speaking" id="officerSpeaking" style="display:none">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="officer-title">Visa Officer</p>
+                        <p class="officer-country" id="officerCountry">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversation Panel -->
+            <div class="conversation-panel">
+                <!-- Question Display -->
+                <div class="question-section">
+                    <div class="question-label">Officer's Question <span id="qCounter">1</span></div>
+                    <div class="question-box glass-card" id="questionBox">
+                        <div class="question-loading" id="questionLoading">
+                            <div class="typing-dots"><span></span><span></span><span></span></div>
+                        </div>
+                        <p class="question-text" id="questionText" style="display:none"></p>
+                    </div>
+                </div>
+
+                <!-- Speech Input -->
+                <div class="answer-section">
+                    <div class="answer-label">
+                        <span>Your Answer</span>
+                        <span class="word-count" id="wordCount">0 words</span>
+                    </div>
+                    <textarea id="answerTextarea" class="answer-textarea"
+                        placeholder="Speak or type your answer here..." rows="5" disabled></textarea>
+
+                    <!-- Controls -->
+                    <div class="answer-controls">
+                        <button class="btn-mic" id="micBtn" type="button" disabled>
+                            <svg id="micIcon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                                <line x1="12" y1="19" x2="12" y2="23" />
+                                <line x1="8" y1="23" x2="16" y2="23" />
+                            </svg>
+                            <span id="micText">Start Telling</span>
+                        </button>
+
+                        <button class="btn btn-primary btn-answer" id="submitAnswerBtn" type="button" disabled>
+                            Submit Answer →
+                        </button>
+                        <button class="btn btn-danger btn-sm" id="endInterviewBtn" type="button">
+                            End Interview
+                        </button>
+                    </div>
+
+                    <!-- Speech status -->
+                    <div class="speech-status" id="speechStatus"></div>
+                </div>
+
+                <!-- Progress -->
+                <div class="interview-progress">
+                    <div class="progress-track">
+                        <div class="progress-bar" id="progressBar" style="width:0%"></div>
+                    </div>
+                    <div class="progress-labels">
+                        <span>Start</span>
+                        <span id="progressLabel">0 / 10 questions</span>
+                        <span>Complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="session-data-raw" value='<%- session %>'>
+    <script>
+        try {
+            window.__session = JSON.parse(document.getElementById('session-data-raw').value);
+        } catch (e) {
+            console.error('Failed to parse session data:', e);
+            window.__session = {};
+        }
+    </script>

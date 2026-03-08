@@ -1,0 +1,211 @@
+/* ============================================================
+   Sidebar CSS
+   ============================================================ */
+
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+}
+
+/* Brand */
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-5) var(--sp-5);
+    border-bottom: 1px solid var(--border);
+}
+
+.brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: var(--text-lg);
+    font-weight: var(--fw-extrabold);
+    color: var(--text-primary);
+}
+
+.brand-icon-sm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    border-radius: var(--radius);
+    color: #fff;
+}
+
+.brand-link .accent {
+    color: var(--accent);
+}
+
+.sidebar-close {
+    display: none;
+    color: var(--text-muted);
+    font-size: var(--text-lg);
+}
+
+/* User Section */
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-4) var(--sp-5);
+    border-bottom: 1px solid var(--border);
+}
+
+.user-avatar {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    overflow: visible;
+    flex-shrink: 0;
+}
+
+.user-avatar img {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--fw-bold);
+    color: #fff;
+    font-size: var(--text-lg);
+}
+
+.user-name {
+    font-size: var(--text-sm);
+    font-weight: var(--fw-semibold);
+    color: var(--text-primary);
+}
+
+.user-plan {
+    margin-top: 2px;
+}
+
+/* Nav */
+.sidebar-nav {
+    flex: 1;
+    padding: var(--sp-4) var(--sp-3);
+}
+
+.nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+}
+
+.nav-link-sidebar {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-3);
+    border-radius: var(--radius);
+    font-size: var(--text-sm);
+    font-weight: var(--fw-medium);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition);
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: none;
+}
+
+.nav-link-sidebar:hover {
+    background: var(--surface);
+    color: var(--text-primary);
+}
+
+.nav-link-sidebar.active {
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--accent);
+    font-weight: var(--fw-semibold);
+}
+
+.nav-link-sidebar.danger:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.nav-divider {
+    height: 1px;
+    background: var(--border);
+    margin: var(--sp-3) 0;
+}
+
+/* CTA */
+.sidebar-cta {
+    margin: var(--sp-4);
+    padding: var(--sp-4) var(--sp-5);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.15));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: var(--radius);
+}
+
+.cta-title {
+    font-size: var(--text-sm);
+    font-weight: var(--fw-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--sp-1);
+}
+
+.cta-desc {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    margin-bottom: var(--sp-3);
+}
+
+/* Overlay for mobile */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: calc(var(--z-overlay) - 1);
+    backdrop-filter: blur(4px);
+}
+
+.sidebar-overlay.visible {
+    display: block;
+}
+
+/* Mobile sidebar */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: var(--z-overlay);
+        transform: translateX(-100%);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .sidebar-close {
+        display: block;
+    }
+}

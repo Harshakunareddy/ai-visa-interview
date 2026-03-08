@@ -1,0 +1,71 @@
+<%# ══════════════ TAB: Razorpay ══════════════ %>
+    <section class="config-section" id="section-razorpay" data-section="razorpay">
+        <div class="section-header">
+            <div class="section-title-row">
+                <span class="section-icon">💳</span>
+                <div>
+                    <h2>Razorpay Payments</h2>
+                    <p>Used for subscription billing. Supports test and live modes.</p>
+                </div>
+            </div>
+            <span class="section-badge <%= cfg.setup?.configuredSections?.razorpay ? 'done' : 'pending' %>"
+                id="badge-razorpay">
+                <%= cfg.setup?.configuredSections?.razorpay ? '✓ Configured' : 'Not Set' %>
+            </span>
+        </div>
+
+        <div class="guide-box">
+            <strong>📖 How to get Razorpay credentials:</strong>
+            <ol>
+                <li>Go to <a href="https://dashboard.razorpay.com" target="_blank">dashboard.razorpay.com</a></li>
+                <li>Settings → API Keys → Generate Test Key (for dev) or Live Key (for prod)</li>
+                <li>For webhooks: Settings → Webhooks → Add webhook URL: <code>&lt;APP_URL&gt;/webhooks/razorpay</code>
+                </li>
+                <li>For plans: Products → Subscriptions → Plans → Create monthly/yearly plans → copy Plan IDs</li>
+            </ol>
+        </div>
+
+        <div class="config-grid">
+            <div class="config-field">
+                <label>Key ID <span class="secret-tag">🏷️ Visible</span></label>
+                <input type="text" name="keyId" value="<%= cfg.razorpay?.keyId || '' %>"
+                    placeholder="rzp_test_xxxxxxxxxx" />
+            </div>
+            <div class="config-field">
+                <label>Key Secret <span class="secret-tag">🔐 Encrypted</span></label>
+                <div class="secret-input-wrap">
+                    <input type="password" name="keySecret" value=""
+                        placeholder="<%= cfg.razorpay?.keySecret || 'Enter key secret...' %>"
+                        autocomplete="new-password" />
+                    <button type="button" class="reveal-btn">👁</button>
+                </div>
+            </div>
+            <div class="config-field col-2">
+                <label>Webhook Secret <span class="secret-tag">🔐 Encrypted</span></label>
+                <div class="secret-input-wrap">
+                    <input type="password" name="webhookSecret" value=""
+                        placeholder="<%= cfg.razorpay?.webhookSecret || 'Enter webhook secret...' %>"
+                        autocomplete="new-password" />
+                    <button type="button" class="reveal-btn">👁</button>
+                </div>
+                <small>The secret set when creating the webhook in Razorpay Dashboard</small>
+            </div>
+            <div class="config-field">
+                <label>Monthly Plan ID</label>
+                <input type="text" name="monthlyPlanId" value="<%= cfg.razorpay?.monthlyPlanId || '' %>"
+                    placeholder="plan_xxxxxxxxxxxxxx" />
+                <small>₹499/month plan ID from Razorpay</small>
+            </div>
+            <div class="config-field">
+                <label>Yearly Plan ID</label>
+                <input type="text" name="yearlyPlanId" value="<%= cfg.razorpay?.yearlyPlanId || '' %>"
+                    placeholder="plan_xxxxxxxxxxxxxx" />
+                <small>₹3999/year plan ID from Razorpay</small>
+            </div>
+        </div>
+
+        <div class="section-actions">
+            <button class="btn btn-primary save-section-btn" data-section="razorpay">💾 Save Razorpay Config</button>
+            <button class="btn btn-ghost test-service-btn" data-service="razorpay">🔌 Test Connection</button>
+        </div>
+    </section>

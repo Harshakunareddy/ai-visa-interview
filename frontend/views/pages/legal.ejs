@@ -1,0 +1,32 @@
+<% layout('layouts/main') %>
+    <div class="legal-page py-24">
+        <div class="container mx-auto max-w-4xl px-6">
+            <h1 class="text-4xl font-bold mb-8 text-primary">
+                <%= legalTitle %>
+            </h1>
+
+            <div class="glass-card p-10 legal-content">
+                <style>
+                    .legal-content-inner {
+                        color: var(--text-secondary);
+                        line-height: 1.8;
+                        font-size: 1.1rem;
+                        white-space: pre-wrap;
+                    }
+
+                    .legal-content-inner h2 {
+                        color: var(--text-primary);
+                        font-size: 1.5rem;
+                        margin: 2rem 0 1rem;
+                    }
+                </style>
+                <div class="legal-content-inner">
+                    <%= content %>
+                </div>
+            </div>
+
+            <div class="mt-12 text-center text-muted text-sm">
+                Last updated: <%= new Date().toLocaleDateString() %>
+            </div>
+        </div>
+    </div>

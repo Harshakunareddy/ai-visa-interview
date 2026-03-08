@@ -1,0 +1,54 @@
+<%# ══════════════ TAB: Cloudinary ══════════════ %>
+    <section class="config-section" id="section-cloudinary" data-section="cloudinary">
+        <div class="section-header">
+            <div class="section-title-row">
+                <span class="section-icon">☁️</span>
+                <div>
+                    <h2>Cloudinary Storage</h2>
+                    <p>Used for profile photos, resume PDFs, and interview recordings.</p>
+                </div>
+            </div>
+            <span class="section-badge <%= cfg.setup?.configuredSections?.cloudinary ? 'done' : 'pending' %>"
+                id="badge-cloudinary">
+                <%= cfg.setup?.configuredSections?.cloudinary ? '✓ Configured' : 'Not Set' %>
+            </span>
+        </div>
+
+        <div class="guide-box">
+            <strong>📖 How to get Cloudinary credentials:</strong>
+            <ol>
+                <li>Sign up free at <a href="https://cloudinary.com" target="_blank">cloudinary.com</a></li>
+                <li>From the Dashboard, copy <strong>Cloud Name</strong>, <strong>API Key</strong>, and <strong>API
+                        Secret</strong></li>
+                <li>Free tier: 25 GB storage, 25 GB bandwidth/month</li>
+            </ol>
+        </div>
+
+        <div class="config-grid">
+            <div class="config-field">
+                <label>Cloud Name</label>
+                <input type="text" name="cloudName" value="<%= cfg.cloudinary?.cloudName || '' %>"
+                    placeholder="my-cloud-name" />
+            </div>
+            <div class="config-field">
+                <label>API Key</label>
+                <input type="text" name="apiKey" value="<%= cfg.cloudinary?.apiKey || '' %>"
+                    placeholder="123456789012345" />
+            </div>
+            <div class="config-field col-2">
+                <label>API Secret <span class="secret-tag">🔐 Encrypted</span></label>
+                <div class="secret-input-wrap">
+                    <input type="password" name="apiSecret" value=""
+                        placeholder="<%= cfg.cloudinary?.apiSecret || 'Enter API secret...' %>"
+                        autocomplete="new-password" />
+                    <button type="button" class="reveal-btn">👁</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-actions">
+            <button class="btn btn-primary save-section-btn" data-section="cloudinary">💾 Save Cloudinary
+                Config</button>
+            <button class="btn btn-ghost test-service-btn" data-service="cloudinary">🔌 Test Connection</button>
+        </div>
+    </section>

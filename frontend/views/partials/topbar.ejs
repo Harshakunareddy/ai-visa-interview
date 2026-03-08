@@ -1,0 +1,46 @@
+<header class="topbar" role="banner">
+    <button class="topbar-burger" id="sidebarToggle" aria-label="Open sidebar">
+        <span></span><span></span><span></span>
+    </button>
+
+    <div class="topbar-title">
+        <h1 class="page-heading">
+            <% if (page==='dashboard' ) { %>🏛️ Dashboard
+                <% } else if (page==='analytics' ) { %>📊 Analytics
+                    <% } else if (page==='interview' ) { %>🎤 Interview Setup
+                        <% } else if (page==='profile' ) { %>👤 Profile
+                            <% } else if (page==='pricing' ) { %>💎 Subscription
+                                <% } else { %>
+                                    <%= title %>
+                                        <% } %>
+        </h1>
+    </div>
+
+    <div class="topbar-actions">
+        <% if (typeof isDemo === 'undefined' || !isDemo) { %>
+            <% if (subscription) { %>
+                <div class="sub-badge sub-<%= subscription.plan %>">
+                    <%= subscription.plan==='free' ? '🆓 Free' : subscription.plan==='monthly' ? '⭐ Monthly' : '💎 Yearly'
+                        %>
+                </div>
+                <% } %>
+                    <div class="topbar-avatar" id="topbarAvatarBtn" role="button" tabindex="0" aria-expanded="false">
+                        <% if (user && user.photoURL) { %>
+                            <img src="<%= user.photoURL %>" alt="<%= user.displayName %>" width="36" height="36" />
+                            <% } else { %>
+                                <span>
+                                    <%= user ? (user.displayName || 'U' )[0].toUpperCase() : 'U' %>
+                                </span>
+                                <% } %>
+                    </div>
+                    <!-- Dropdown -->
+                    <div class="topbar-dropdown" id="topbarDropdown" aria-label="User menu">
+                        <a href="/profile" class="dropdown-item">Profile</a>
+                        <a href="/subscription" class="dropdown-item">Subscription</a>
+                        <hr class="dropdown-divider" />
+                        <button class="dropdown-item danger" id="logoutBtnTop">Logout</button>
+                    </div>
+        <% } %>
+    </div>
+
+</header>

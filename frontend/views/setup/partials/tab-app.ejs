@@ -1,0 +1,301 @@
+<%# ══════════════ TAB: Application Settings ══════════════ %>
+    <section class="config-section active" id="section-app" data-section="app">
+        <div class="section-header">
+            <div class="section-title-row">
+                <span class="section-icon">⚙️</span>
+                <div>
+                    <h2>Application Settings</h2>
+                    <p>Basic app configuration — environment, port, session security, and feature flags.</p>
+                </div>
+            </div>
+            <span class="section-badge <%= cfg.setup?.configuredSections?.app ? 'done' : 'pending' %>" id="badge-app">
+                <%= cfg.setup?.configuredSections?.app ? '✓ Configured' : 'Not Set' %>
+            </span>
+        </div>
+
+        <div class="config-grid">
+            <div class="config-field">
+                <label>Node Environment</label>
+                <select name="nodeEnv">
+                    <option value="development" <%=cfg.app?.nodeEnv==='development' ?'selected':'' %>>development
+                    </option>
+                    <option value="production" <%=cfg.app?.nodeEnv==='production' ?'selected':'' %>>production</option>
+                </select>
+                <small>Use <code>production</code> for live deployments</small>
+            </div>
+            <div class="config-field">
+                <label>Port</label>
+                <input type="number" name="port" value="<%= cfg.app?.port || '5000' %>" placeholder="5000" />
+                <small>Server port (default: 5000)</small>
+            </div>
+            <div class="config-field col-2">
+                <label>App URL</label>
+                <input type="url" name="appUrl" value="<%= cfg.app?.appUrl || 'http://localhost:5000' %>"
+                    placeholder="https://yourdomain.com" />
+                <small>Public app URL — used in emails and OAuth callbacks</small>
+            </div>
+            <div class="config-field col-2">
+                <label>Session Secret <span class="secret-tag">🔐 Encrypted</span></label>
+                <div class="secret-input-wrap">
+                    <input type="password" name="sessionSecret" value=""
+                        placeholder="<%= cfg.app?.sessionSecret || 'Enter a long random string...' %>"
+                        autocomplete="new-password" />
+                    <button type="button" class="reveal-btn">👁</button>
+                </div>
+                <small>Used to sign session cookies. At least 32 random characters.</small>
+                <button type="button" class="generate-btn" data-target="sessionSecret">⚡ Auto-generate</button>
+            </div>
+        </div>
+
+        <!-- ── Paywall Toggle ─────────────────────────── -->
+        <div class="config-divider"></div>
+        <div class="paywall-toggle-section">
+            <div class="paywall-settings-grid">
+                <!-- Paywall Control -->
+                <div class="paywall-setting-item">
+                    <div class="paywall-toggle-info">
+                        <span class="paywall-icon">🔒</span>
+                        <div>
+                            <h3>Enforce Interview Paywall</h3>
+                            <p>When <strong>ON</strong>, free users are limited. When <strong>OFF</strong>, the system doesn't check limits (system-wide).</p>
+                        </div>
+                    </div>
+                    <label class="paywall-switch" title="Toggle paywall enforcement">
+                        <input type="checkbox" name="paywallEnabled" <%=cfg.app?.paywallEnabled !== false ? 'checked' : '' %>>
+                        <span class="paywall-slider"></span>
+                    </label>
+                </div>
+
+                <div class="config-divider-mini"></div>
+
+                <!-- Global Unlimited Bypass -->
+                <div class="paywall-setting-item">
+                    <div class="paywall-toggle-info">
+                        <span class="paywall-icon">🔓</span>
+                        <div>
+                            <h3>Global Unlimited Access</h3>
+                            <p><strong>OVERRIDE:</strong> When enabled, anyone can get unlimited interviews regardless of plan or paywall status.</p>
+                        </div>
+                    </div>
+                    <label class="paywall-switch mode-unlimited" title="Toggle global unlimited access">
+                        <input type="checkbox" name="unlimitedAccess" <%=cfg.app?.unlimitedAccess === true ? 'checked' : '' %>>
+                        <span class="paywall-slider"></span>
+                    </label>
+                </div>
+
+                <div class="config-divider-mini"></div>
+
+                <!-- Behavioral Features Control -->
+                <div class="paywall-setting-item">
+                    <div class="paywall-toggle-info">
+                        <span class="paywall-icon">👁️</span>
+                        <div>
+                            <h3>Behavioral Features Analysis</h3>
+                            <p>Enable or disable <strong>Eye Tracking</strong> and <strong>Nervousness Analysis</strong> HUD and metrics.</p>
+                        </div>
+                    </div>
+                    <label class="paywall-switch mode-behavioral" title="Toggle behavioral features">
+                        <input type="checkbox" name="behavioralFeaturesEnabled" <%=cfg.app?.behavioralFeaturesEnabled !== false ? 'checked' : '' %>>
+                        <span class="paywall-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+
+            <div class="paywall-status-bar" id="paywallStatusBar">
+                <% if (cfg.app?.unlimitedAccess) { %>
+                    <span class="paywall-badge unlimited-on">🚀 UNLIMITED MODE ACTIVE — All users have full access</span>
+                <% } else if (cfg.app?.paywallEnabled === false) { %>
+                    <span class="paywall-badge paywall-off">🔓 Paywall is OFF — Unlimited access for all</span>
+                <% } else { %>
+                    <span class="paywall-badge paywall-on">🔒 Paywall is ON — Free users limited to 1 interview</span>
+                <% } %>
+            </div>
+        </div>
+
+        <div class="section-actions">
+            <button class="btn btn-primary save-section-btn" data-section="app">💾 Save Application Settings</button>
+        </div>
+
+        <style>
+            .config-divider {
+                height: 1px;
+                background: var(--border);
+                margin: var(--sp-6) 0;
+            }
+            .config-divider-mini {
+                height: 1px;
+                background: var(--border-light);
+                margin: var(--sp-2) 0;
+            }
+
+            .paywall-toggle-section {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: var(--radius-lg);
+                padding: var(--sp-6);
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-6);
+            }
+
+            .paywall-settings-grid {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-4);
+            }
+
+            .paywall-setting-item {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: var(--sp-6);
+            }
+
+            .paywall-toggle-header {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: var(--sp-6);
+            }
+
+            .paywall-toggle-info {
+                display: flex;
+                align-items: flex-start;
+                gap: var(--sp-4);
+                flex: 1;
+            }
+
+            .paywall-icon {
+                font-size: 1.5rem;
+                margin-top: 2px;
+            }
+
+            .paywall-toggle-info h3 {
+                font-size: var(--text-base);
+                font-weight: var(--fw-bold);
+                color: var(--text-primary);
+                margin-bottom: var(--sp-1);
+            }
+
+            .paywall-toggle-info p {
+                font-size: var(--text-sm);
+                color: var(--text-muted);
+                line-height: 1.5;
+            }
+
+            .paywall-switch {
+                position: relative;
+                display: inline-block;
+                width: 52px;
+                height: 28px;
+                flex-shrink: 0;
+                cursor: pointer;
+                margin-top: 4px;
+            }
+
+            .paywall-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .paywall-slider {
+                position: absolute;
+                inset: 0;
+                background: var(--border);
+                border-radius: 999px;
+                transition: 0.3s;
+                border: 2px solid var(--border);
+            }
+
+            .paywall-slider::before {
+                content: '';
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                left: 2px;
+                bottom: 2px;
+                background: #fff;
+                border-radius: 50%;
+                transition: 0.3s;
+            }
+
+            .paywall-switch input:checked+.paywall-slider {
+                background: var(--accent);
+                border-color: var(--accent);
+            }
+            .paywall-switch.mode-unlimited input:checked+.paywall-slider {
+                background: var(--success);
+                border-color: var(--success);
+            }
+            .paywall-switch.mode-behavioral input:checked+.paywall-slider {
+                background: var(--purple);
+                border-color: var(--purple);
+            }
+
+
+            .paywall-switch input:checked+.paywall-slider::before {
+                transform: translateX(24px);
+            }
+
+            .paywall-status-bar {
+                display: flex;
+                align-items: center;
+            }
+
+            .paywall-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: var(--sp-2);
+                font-size: var(--text-sm);
+                font-weight: var(--fw-semibold);
+                padding: var(--sp-2) var(--sp-4);
+                border-radius: 999px;
+                width: 100%;
+            }
+
+            .paywall-on {
+                background: rgba(99, 102, 241, 0.1);
+                color: var(--accent-light);
+                border: 1px solid rgba(99, 102, 241, 0.2);
+            }
+
+            .paywall-off {
+                background: rgba(34, 197, 94, 0.1);
+                color: #86efac;
+                border: 1px solid rgba(34, 197, 94, 0.2);
+            }
+            .unlimited-on {
+                background: rgba(34, 197, 94, 0.2);
+                color: #86efac;
+                border: 1px solid #86efac;
+                animation: pulse-green 2s infinite;
+            }
+            @keyframes pulse-green {
+                0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+                70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+            }
+        </style>
+        <script>
+            (function () {
+                var pToggle = document.querySelector('input[name="paywallEnabled"]');
+                var uToggle = document.querySelector('input[name="unlimitedAccess"]');
+                var bar = document.getElementById('paywallStatusBar');
+                
+                function updateStatus() {
+                    if (uToggle.checked) {
+                        bar.innerHTML = '<span class="paywall-badge unlimited-on">🚀 UNLIMITED MODE ACTIVE — All users have full access</span>';
+                    } else if (!pToggle.checked) {
+                        bar.innerHTML = '<span class="paywall-badge paywall-off">🔓 Paywall is OFF — Unlimited access for all</span>';
+                    } else {
+                        bar.innerHTML = '<span class="paywall-badge paywall-on">🔒 Paywall is ON — Free users limited to 1 interview</span>';
+                    }
+                }
+                
+                if (pToggle) pToggle.addEventListener('change', updateStatus);
+                if (uToggle) uToggle.addEventListener('change', updateStatus);
+            })();
+        </script>
+    </section>

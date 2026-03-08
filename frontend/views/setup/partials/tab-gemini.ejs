@@ -1,0 +1,94 @@
+<%# ══════════════ TAB: AI Provider (OpenAI / Groq) ══════════════ %>
+    <section class="config-section" id="section-gemini" data-section="gemini">
+        <div class="section-header">
+            <div class="section-title-row">
+                <span class="section-icon">🤖</span>
+                <div>
+                    <h2>AI Provider</h2>
+                    <p>Powers the AI visa officer, question generation, and behavioral evaluation.</p>
+                </div>
+            </div>
+            <span class="section-badge <%= cfg.setup?.configuredSections?.gemini ? 'done' : 'pending' %>"
+                id="badge-gemini">
+                <%= cfg.setup?.configuredSections?.gemini ? '✓ Configured' : 'Not Set' %>
+            </span>
+        </div>
+
+        <%# ── Provider selector ──────────────────────────────────── %>
+            <div class="config-grid" style="margin-bottom: 16px;">
+                <div class="config-field col-2">
+                    <label>Active AI Provider</label>
+                    <select name="provider"
+                        style="width:100%; padding:10px 14px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:14px;">
+                        <option value="openai" <%=(cfg.gemini?.provider==='openai' || !cfg.gemini?.provider)
+                            ? 'selected' : '' %>>🧠 OpenAI — gpt-4o-mini</option>
+                        <option value="groq" <%=cfg.gemini?.provider==='groq' ? 'selected' : '' %>>⚡ Groq — Llama 3.3
+                            70B (Free)</option>
+                    </select>
+                    <small>Select which provider to use for all AI features. You can store both keys below.</small>
+                </div>
+            </div>
+
+            <%# ── OpenAI section ──────────────────────────────────────── %>
+                <div class="guide-box" style="border-color: #10b981; background: rgba(16,185,129,0.06);">
+                    <strong>🧠 OpenAI (gpt-4o-mini)</strong>
+                    <p style="margin: 6px 0 4px;">A powerful paid model — free tier available without billing details.
+                    </p>
+                    <ol>
+                        <li>Go to <a href="https://platform.openai.com/api-keys"
+                                target="_blank">platform.openai.com/api-keys</a></li>
+                        <li>Click <strong>Create new secret key</strong></li>
+                        <li>Copy the key (starts with <code>sk-...</code>) and paste below</li>
+                    </ol>
+                </div>
+
+                <div class="config-grid">
+                    <div class="config-field col-2">
+                        <label>OpenAI API Key <span class="secret-tag"
+                                style="background:rgba(16,185,129,0.2);color:#10b981;">🔐 Encrypted</span></label>
+                        <div class="secret-input-wrap">
+                            <input type="password" name="openaiApiKey" value=""
+                                placeholder="<%= cfg.gemini?.openaiApiKey || 'sk-proj-...' %>"
+                                autocomplete="new-password" />
+                            <button type="button" class="reveal-btn">👁</button>
+                        </div>
+                        <small>Model: <code>gpt-4o-mini</code> — fast and affordable</small>
+                    </div>
+                </div>
+
+                <%# ── Groq section ────────────────────────────────────────── %>
+                    <div class="guide-box"
+                        style="border-color: var(--accent); background: rgba(99,102,241,0.08); margin-top: 16px;">
+                        <strong>⚡ Groq — Llama 3.3 70B (100% Free, No Credit Card)</strong>
+                        <p style="margin: 6px 0 4px;"><strong>14,400 requests/day</strong> for free — the best option
+                            for high usage.</p>
+                        <ol>
+                            <li>Go to <a href="https://console.groq.com" target="_blank">console.groq.com</a></li>
+                            <li>Sign in with Google → Click <strong>API Keys</strong> → <strong>Create API key</strong>
+                            </li>
+                            <li>Copy the key (starts with <code>gsk_...</code>) and paste below</li>
+                        </ol>
+                    </div>
+
+                    <div class="config-grid">
+                        <div class="config-field col-2">
+                            <label>Groq API Key <span class="secret-tag"
+                                    style="background:rgba(99,102,241,0.2);color:#818cf8;">⚡ Free Tier</span></label>
+                            <div class="secret-input-wrap">
+                                <input type="password" name="groqApiKey" value=""
+                                    placeholder="<%= cfg.gemini?.groqApiKey || 'gsk_...' %>"
+                                    autocomplete="new-password" />
+                                <button type="button" class="reveal-btn">👁</button>
+                            </div>
+                            <small>Model: <code>llama-3.3-70b-versatile</code> — 14,400 req/day free, no credit
+                                card</small>
+                        </div>
+                    </div>
+
+                    <div class="section-actions">
+                        <button class="btn btn-primary save-section-btn" data-section="gemini">💾 Save AI
+                            Config</button>
+                        <button class="btn btn-ghost test-service-btn" data-service="gemini">🔌 Test Active
+                            Provider</button>
+                    </div>
+    </section>

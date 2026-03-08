@@ -1,0 +1,85 @@
+<%# ══════════════ TAB: Firebase ══════════════ %>
+    <section class="config-section" id="section-firebase" data-section="firebase">
+        <div class="section-header">
+            <div class="section-title-row">
+                <span class="section-icon">🔥</span>
+                <div>
+                    <h2>Firebase Configuration</h2>
+                    <p>Required for Google authentication. Get these from Firebase Console.</p>
+                </div>
+            </div>
+            <span class="section-badge <%= cfg.setup?.configuredSections?.firebase ? 'done' : 'pending' %>"
+                id="badge-firebase">
+                <%= cfg.setup?.configuredSections?.firebase ? '✓ Configured' : 'Not Set' %>
+            </span>
+        </div>
+
+        <div class="guide-box">
+            <strong>📖 How to get Firebase credentials:</strong>
+            <ol>
+                <li>Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a>
+                </li>
+                <li>Create / select your project</li>
+                <li>Enable <strong>Authentication → Google Sign-in</strong></li>
+                <li>Go to <strong>Project Settings → General</strong> → Copy web app config</li>
+                <li>Go to <strong>Project Settings → Service Accounts</strong> → Generate new private key (JSON)</li>
+                <li>Copy <code>project_id</code>, <code>client_email</code>, and <code>private_key</code> from the JSON
+                    file</li>
+            </ol>
+        </div>
+
+        <h3 class="sub-heading">Admin SDK (Server-side)</h3>
+        <div class="config-grid">
+            <div class="config-field">
+                <label>Project ID</label>
+                <input type="text" name="projectId" value="<%= cfg.firebase?.projectId || '' %>"
+                    placeholder="my-project-id" />
+            </div>
+            <div class="config-field">
+                <label>Client Email</label>
+                <input type="email" name="clientEmail" value="<%= cfg.firebase?.clientEmail || '' %>"
+                    placeholder="firebase-adminsdk-xxx@project.iam.gserviceaccount.com" />
+            </div>
+            <div class="config-field col-2">
+                <label>Private Key <span class="secret-tag">🔐 Encrypted</span></label>
+                <div class="secret-input-wrap">
+                    <textarea name="privateKey" rows="4"
+                        placeholder="<%= cfg.firebase?.privateKey || '-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----' %>"></textarea>
+                </div>
+                <small>Paste the full <code>private_key</code> value from the JSON file (with newlines).</small>
+            </div>
+        </div>
+
+        <h3 class="sub-heading">Client SDK (Browser-side)</h3>
+        <div class="config-grid">
+            <div class="config-field">
+                <label>API Key</label>
+                <input type="text" name="apiKey" value="<%= cfg.firebase?.apiKey || '' %>" placeholder="AIzaSy..." />
+            </div>
+            <div class="config-field">
+                <label>Auth Domain</label>
+                <input type="text" name="authDomain" value="<%= cfg.firebase?.authDomain || '' %>"
+                    placeholder="project.firebaseapp.com" />
+            </div>
+            <div class="config-field">
+                <label>Storage Bucket</label>
+                <input type="text" name="storageBucket" value="<%= cfg.firebase?.storageBucket || '' %>"
+                    placeholder="project.appspot.com" />
+            </div>
+            <div class="config-field">
+                <label>Messaging Sender ID</label>
+                <input type="text" name="messagingSenderId" value="<%= cfg.firebase?.messagingSenderId || '' %>"
+                    placeholder="123456789" />
+            </div>
+            <div class="config-field col-2">
+                <label>App ID</label>
+                <input type="text" name="appId" value="<%= cfg.firebase?.appId || '' %>"
+                    placeholder="1:123456789:web:abc123" />
+            </div>
+        </div>
+
+        <div class="section-actions">
+            <button class="btn btn-primary save-section-btn" data-section="firebase">💾 Save Firebase Config</button>
+            <button class="btn btn-ghost test-service-btn" data-service="firebase">🔌 Test Connection</button>
+        </div>
+    </section>

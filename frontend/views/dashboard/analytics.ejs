@@ -1,0 +1,264 @@
+<!-- Analytics Dashboard -->
+<% layout('layouts/dashboard') %>
+    <div class="analytics-page">
+
+        <!-- Page Header -->
+        <div class="analytics-header glass-card animate-fade-in">
+            <div class="analytics-header-left">
+                <h2>&#128200; Analytics</h2>
+                <p>Your interview performance over time — track improvement, patterns, and approval trends.</p>
+            </div>
+            <div class="analytics-header-stats">
+                <div class="analytics-stat">
+                    <div class="analytics-stat-val">
+                        <%= totalSessions || sessions.length %>
+                    </div>
+                    <div class="analytics-stat-label">Total Interviews</div>
+                </div>
+                <% if (sessions && sessions.length> 0) {
+                    var totalApproval = 0;
+                    var totalScore = 0;
+                    for (var si = 0; si < sessions.length; si++) { var dec=sessions[si].decision || {}; var
+                        sc=sessions[si].scores || {}; totalApproval +=(dec.approvalProbability || 0); totalScore
+                        +=(sc.overall || 0); } var avgApproval=Math.round(totalApproval / sessions.length); var
+                        avgScore=Math.round(totalScore / sessions.length); %>
+                        <div class="analytics-stat">
+                            <div class="analytics-stat-val" style="color:var(--success)">
+                                <%= avgApproval %>%
+                            </div>
+                            <div class="analytics-stat-label">Avg. Approval</div>
+                        </div>
+                        <div class="analytics-stat">
+                            <div class="analytics-stat-val" style="color:var(--accent)">
+                                <%= avgScore %>
+                            </div>
+                            <div class="analytics-stat-label">Avg. Score</div>
+                        </div>
+                        <% } %>
+            </div>
+        </div>
+
+        <% if (sessions && sessions.length> 0) { %>
+
+            <div class="charts-grid">
+                <!-- Score trend -->
+                <div class="chart-card glass-card animate-fade-in">
+                    <h3>&#128200; Score Trend</h3>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="scoreChart"></canvas>
+                    </div>
+                </div>
+                <!-- Country distribution -->
+                <div class="chart-card glass-card animate-fade-in">
+                    <h3>&#127758; Interviews by Country</h3>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="countryChart"></canvas>
+                    </div>
+                </div>
+                <!-- Verdict distribution -->
+                <div class="chart-card glass-card animate-fade-in-up" style="grid-column:1/-1">
+                    <h3>&#9878; Verdict Distribution</h3>
+                    <div class="chart-canvas-wrap-short">
+                        <canvas id="verdictChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sessions table -->
+            <div class="glass-card animate-fade-in-up" style="padding:var(--sp-6)">
+                <h3 style="margin-bottom:var(--sp-5)">All Interview Sessions</h3>
+                <div style="overflow-x:auto">
+                    <table class="sessions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Country</th>
+                                <th>Visa</th>
+                                <th>Score</th>
+                                <th>Confidence</th>
+                                <th>Approval</th>
+                                <th>Verdict</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% var flags={USA:'🇺🇸', Canada:'🇨🇦', UK:'🇬🇧', Australia:'🇦🇺', Germany:'🇩🇪'}; %>
+                                <% for (var ti=0; ti < sessions.length; ti++) { var s=sessions[ti]; var sDec=s.decision
+                                    || {}; var sSc=s.scores || {}; var sVerdict=sDec.verdict || 'Pending' ; var
+                                    sVClass=sVerdict.toLowerCase().replace(/\s+/g, '_' ); %>
+                                    <tr>
+                                        <td>
+                                            <%= new Date(s.createdAt).toLocaleDateString() %>
+                                        </td>
+                                        <td>
+                                            <%= flags[s.targetCountry] || '' %>
+                                                <%= s.targetCountry %>
+                                        </td>
+                                        <td>
+                                            <%= s.visaType %>
+                                        </td>
+                                        <td><strong>
+                                                <%= Math.round(sSc.overall || 0) %>
+                                            </strong></td>
+                                        <td>
+                                            <%= Math.round(sSc.confidence || 0) %>
+                                        </td>
+                                        <td style="color:var(--success)">
+                                            <%= Math.round(sDec.approvalProbability || 0) %>%
+                                        </td>
+                                        <td>
+                                            <span class="verdict-badge verdict-<%= sVClass %>"
+                                                style="padding:2px 8px;font-size:11px">
+                                                <%= sVerdict %>
+                                            </span>
+                                        </td>
+                                        <td><a href="/interview/<%= s.sessionId %>/results"
+                                                class="btn btn-ghost btn-sm">View</a></td>
+                                    </tr>
+                                    <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <% } else { %>
+                <!-- Empty State -->
+                <div class="glass-card animate-fade-in" style="padding:var(--sp-12);text-align:center">
+                    <div style="font-size:3rem;margin-bottom:var(--sp-4)">&#128202;</div>
+                    <h3 style="margin-bottom:var(--sp-3)">No analytics yet</h3>
+                    <p style="color:var(--text-muted);margin-bottom:var(--sp-6)">
+                        Complete at least one interview to see your score trends, approval rates, and performance
+                        charts.
+                    </p>
+                    <a href="/interview" class="btn btn-primary">Start Interview &#8594;</a>
+                </div>
+                <% } %>
+    </div>
+
+    <style>
+        .analytics-page {
+            display: flex;
+            flex-direction: column;
+            gap: var(--sp-6);
+        }
+
+        .analytics-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--sp-6) var(--sp-8);
+            gap: var(--sp-8);
+        }
+
+        .analytics-header-left h2 {
+            font-size: var(--text-2xl);
+            margin-bottom: var(--sp-1);
+        }
+
+        .analytics-header-left p {
+            color: var(--text-muted);
+            font-size: var(--text-sm);
+        }
+
+        .analytics-header-stats {
+            display: flex;
+            gap: var(--sp-8);
+            flex-shrink: 0;
+        }
+
+        .analytics-stat {
+            text-align: center;
+        }
+
+        .analytics-stat-val {
+            font-size: var(--text-3xl);
+            font-weight: var(--fw-extrabold);
+            color: var(--text-primary);
+            line-height: 1;
+        }
+
+        .analytics-stat-label {
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            margin-top: var(--sp-1);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--sp-5);
+        }
+
+        .chart-card {
+            padding: var(--sp-5) var(--sp-6);
+        }
+
+        .chart-card h3 {
+            font-size: var(--text-base);
+            margin-bottom: var(--sp-4);
+        }
+
+        .chart-canvas-wrap {
+            position: relative;
+            height: 260px;
+            width: 100%;
+        }
+
+        .chart-canvas-wrap-short {
+            position: relative;
+            height: 160px;
+            width: 100%;
+        }
+
+        .chart-canvas-wrap canvas,
+        .chart-canvas-wrap-short canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .sessions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sessions-table th,
+        .sessions-table td {
+            padding: var(--sp-3) var(--sp-4);
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: var(--text-sm);
+        }
+
+        .sessions-table th {
+            color: var(--text-muted);
+            font-weight: var(--fw-semibold);
+            font-size: var(--text-xs);
+            text-transform: uppercase;
+        }
+
+        .sessions-table tr:hover td {
+            background: var(--surface);
+        }
+
+        @media(max-width:768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <% if (sessions && sessions.length> 0) { %>
+        <input type="hidden" id="chart-data-raw" value='<%- chartData  %>'>
+        <input type="hidden" id="country-data-raw" value='<%- countryMap %>'>
+        <input type="hidden" id="verdict-data-raw" value='<%- verdictMap %>'>
+        <script>
+            var chartData = JSON.parse(document.getElementById('chart-data-raw').value || '[]');
+            var countryMap = JSON.parse(document.getElementById('country-data-raw').value || '{}');
+            var verdictMap = JSON.parse(document.getElementById('verdict-data-raw').value || '{}');
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script src="/js/analytics.js"></script>
+        <% } %>

@@ -1,0 +1,887 @@
+<!-- INTERVIEW RESULTS PAGE -->
+<% layout('layouts/dashboard') %>
+
+    <% var dec=session.decision || {}; var sc=session.scores || {}; var verdict=dec.verdict || 'Pending' ; var
+        approvalPct=dec.approvalProbability || 0; var riskFlags=dec.riskFlags || []; var strengths=dec.strengths || [];
+        var improvements=dec.improvements || []; var officerNotes=dec.officerNotes || 'No notes recorded.' ; var
+        verdictClass=verdict.toLowerCase().replace(/\s+/g,'_'); var scoreItems=[ { label:'Overall', key:'overall',
+        icon:'&#9733;', color:'--accent' }, { label:'Confidence', key:'confidence', icon:'&#128170;', color:'--purple'
+        }, { label:'Communication', key:'communication', icon:'&#128483;', color:'--cyan' }, { label:'Consistency',
+        key:'consistency', icon:'&#128279;', color:'--warning' } ];
+        if (typeof behavioralFeaturesEnabled !== 'undefined' && behavioralFeaturesEnabled) {
+            scoreItems.push({ label:'Eye Contact', key:'eyeContact', icon:'&#128065;', color:'--success' });
+        } %>
+
+
+
+
+        <div class="results-page">
+
+            <!-- ── Hero Header ───────────────────────────────────────── -->
+            <div class="res-hero glass-card animate-fade-in">
+                <div class="res-hero-left">
+                    <div class="res-country-badge">
+                        <% var flags={USA:'🇺🇸', Canada:'🇨🇦', UK:'🇬🇧', Australia:'🇦🇺', Germany:'🇩🇪'}; var
+                            flagEmoji=flags[session.targetCountry] || '🌍' ; %>
+                            <span class="res-flag">
+                                <%= flagEmoji %>
+                            </span>
+                            <div>
+                                <div class="res-country-name">
+                                    <%= session.targetCountry %>
+                                </div>
+                                <div class="res-visa-type">
+                                    <%= session.visaType %> Visa
+                                </div>
+                            </div>
+                    </div>
+                    <h1 class="res-title">Interview Complete</h1>
+                    <p class="res-date">
+                        <% var completedDate=session.completedAt ? new
+                            Date(session.completedAt).toLocaleDateString('en-US', {weekday:'long', year:'numeric',
+                            month:'long', day:'numeric'}) : 'Date unavailable' ; %>
+                            Completed on <%= completedDate %>
+                    </p>
+                </div>
+                <div class="res-hero-right">
+                    <div class="res-verdict verdict-<%= verdictClass %>">
+                        <div class="res-verdict-icon">
+                            <% if (verdictClass==='strong_approval' || verdictClass==='likely_approved' ) { %>&#10003;<%
+                                    } %>
+                                    <% if (verdictClass==='borderline' ) { %>&#8776;<% } %>
+                                            <% if (verdictClass==='likely_rejected' || verdictClass==='strong_rejection'
+                                                ) { %>&#10005;<% } %>
+                                                    <% if (verdictClass==='pending' ) { %>&#9679;<% } %>
+                        </div>
+                        <div class="res-verdict-label">
+                            <%= verdict %>
+                        </div>
+                    </div>
+                    <div class="res-approval-ring">
+                        <svg width="140" height="140" viewBox="0 0 140 140">
+                            <circle cx="70" cy="70" r="56" fill="none" stroke="var(--border)" stroke-width="10" />
+                            <% var circumference=2 * 3.14159 * 56; var dashOffset=circumference * (1 - approvalPct /
+                                100); var ringColor=approvalPct>= 70 ? '#22c55e' : approvalPct >= 40 ? '#f59e0b' :
+                                '#ef4444';
+                                %>
+                                <circle cx="70" cy="70" r="56" fill="none" stroke="<%= ringColor %>" stroke-width="10"
+                                    stroke-dasharray="<%= circumference %>" stroke-dashoffset="<%= dashOffset %>"
+                                    stroke-linecap="round" transform="rotate(-90 70 70)" />
+                                <text x="70" y="62" text-anchor="middle" class="ring-pct">
+                                    <%= approvalPct %>%
+                                </text>
+                                <text x="70" y="82" text-anchor="middle" class="ring-label">Approval</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── Score Cards ───────────────────────────────────────── -->
+            <div class="res-scores-row animate-fade-in-up">
+                <% for (var si=0; si < scoreItems.length; si++) { var item=scoreItems[si]; var val=sc[item.key] || 0;
+                    var circ=2 * 3.14159 * 26; var dash=circ * val / 100; %>
+                    <div class="res-score-card glass-card">
+                        <div class="res-score-icon" style="color:var(<%= item.color %>)"><%- item.icon %></div>
+                        <div class="res-score-ring">
+                            <svg width="72" height="72" viewBox="0 0 72 72">
+                                <circle cx="36" cy="36" r="26" fill="none" stroke="var(--border)" stroke-width="5" />
+                                <circle cx="36" cy="36" r="26" fill="none" stroke="var(<%= item.color %>)"
+                                    stroke-width="5" stroke-dasharray="<%= dash %> <%= circ - dash %>"
+                                    stroke-linecap="round" transform="rotate(-90 36 36)" />
+                                <text x="36" y="41" text-anchor="middle" class="score-num-text">
+                                    <%= val %>
+                                </text>
+                            </svg>
+                        </div>
+                        <div class="res-score-label">
+                            <%= item.label %>
+                        </div>
+                        <div class="res-score-bar">
+                            <div class="res-score-bar-fill"
+                                style="width:<%= val %>%; background:var(<%= item.color %>)"></div>
+                        </div>
+                    </div>
+                    <% } %>
+            </div>
+
+            <!-- ── Decision Grid ─────────────────────────────────────── -->
+            <div class="res-decision-grid animate-fade-in-up">
+
+                <!-- Risk Flags -->
+                <div class="res-panel glass-card res-panel-risk">
+                    <div class="res-panel-header">
+                        <span class="res-panel-icon res-icon-red">&#128680;</span>
+                        <h3>Risk Flags</h3>
+                        <span class="res-panel-count res-count-red">
+                            <%= riskFlags.length %>
+                        </span>
+                    </div>
+                    <% if (riskFlags.length> 0) { %>
+                        <ul class="res-list">
+                            <% for (var ri=0; ri < riskFlags.length; ri++) { %>
+                                <li class="res-list-item res-item-risk">
+                                    <span class="res-dot res-dot-red"></span>
+                                    <%= riskFlags[ri] %>
+                                </li>
+                                <% } %>
+                        </ul>
+                        <% } else { %>
+                            <div class="res-empty res-empty-green">
+                                <span class="res-empty-icon">&#9989;</span>
+                                No risk flags detected — clean interview!
+                            </div>
+                            <% } %>
+                </div>
+
+                <!-- Strengths -->
+                <div class="res-panel glass-card res-panel-strength">
+                    <div class="res-panel-header">
+                        <span class="res-panel-icon res-icon-green">&#10003;</span>
+                        <h3>Strengths</h3>
+                        <span class="res-panel-count res-count-green">
+                            <%= strengths.length %>
+                        </span>
+                    </div>
+                    <ul class="res-list">
+                        <% if (strengths.length> 0) { %>
+                            <% for (var sti=0; sti < strengths.length; sti++) { %>
+                                <li class="res-list-item res-item-strength">
+                                    <span class="res-dot res-dot-green"></span>
+                                    <%= strengths[sti] %>
+                                </li>
+                                <% } %>
+                                    <% } else { %>
+                                        <li class="res-list-item">No strengths recorded.</li>
+                                        <% } %>
+                    </ul>
+                </div>
+
+                <!-- Improvements -->
+                <div class="res-panel glass-card res-panel-improve">
+                    <div class="res-panel-header">
+                        <span class="res-panel-icon res-icon-yellow">&#128161;</span>
+                        <h3>Areas to Improve</h3>
+                        <span class="res-panel-count res-count-yellow">
+                            <%= improvements.length %>
+                        </span>
+                    </div>
+                    <ul class="res-list">
+                        <% if (improvements.length> 0) { %>
+                            <% for (var ii=0; ii < improvements.length; ii++) { %>
+                                <li class="res-list-item res-item-improve">
+                                    <span class="res-dot res-dot-yellow"></span>
+                                    <%= improvements[ii] %>
+                                </li>
+                                <% } %>
+                                    <% } else { %>
+                                        <li class="res-list-item">No improvements noted.</li>
+                                        <% } %>
+                    </ul>
+                </div>
+
+                <!-- Officer Notes -->
+                <div class="res-panel glass-card res-panel-notes">
+                    <div class="res-panel-header">
+                        <span class="res-panel-icon res-icon-blue">&#128203;</span>
+                        <h3>Officer's Notes</h3>
+                    </div>
+                    <blockquote class="res-officer-quote">
+                        <span class="res-quote-mark">"</span>
+                        <%= officerNotes %>
+                            <span class="res-quote-mark">"</span>
+                    </blockquote>
+                </div>
+            </div>
+
+            <!-- ── Q&A Transcript ────────────────────────────────────── -->
+            <div class="res-qa-section animate-fade-in-up">
+                <div class="res-qa-title-row">
+                    <h2 class="res-section-title">&#128221; Interview Transcript</h2>
+                    <span class="res-qa-count">
+                        <%= answers.length %> questions
+                    </span>
+                </div>
+                <div class="res-qa-list">
+                    <% for (var qi=0; qi < answers.length; qi++) { var a=answers[qi]; var ev=a.evaluation || {}; var
+                        aFlags=ev.flags || []; var rel=ev.relevance || 0; var cred=ev.credibility || 0; var
+                        avgScore=Math.round((rel + cred) / 2); var scoreClass=avgScore>= 7 ? 'good' : avgScore >= 4 ?
+                        'ok' : 'low';
+                        %>
+                        <div class="res-qa-card glass-card">
+                            <div class="res-qa-head">
+                                <div class="res-qa-num-wrap">
+                                    <span class="res-qa-num">Q<%= qi + 1 %></span>
+                                    <span class="res-qa-score-badge res-badge-<%= scoreClass %>">
+                                        <%= avgScore %>/10
+                                    </span>
+                                </div>
+                                <div class="res-qa-mini-scores">
+                                    <span class="res-mini-score">Relevance: <strong>
+                                            <%= rel %>/10
+                                        </strong></span>
+                                    <span class="res-mini-score">Credibility: <strong>
+                                            <%= cred %>/10
+                                        </strong></span>
+                                </div>
+                            </div>
+                            <div class="res-qa-body">
+                                <div class="res-qa-question">
+                                    <span class="res-qa-q-label">Q</span>
+                                    <p>
+                                        <%= a.question %>
+                                    </p>
+                                </div>
+                                <div class="res-qa-answer">
+                                    <span class="res-qa-a-label">A</span>
+                                    <p>
+                                        <%= a.answer || 'No answer provided' %>
+                                    </p>
+                                </div>
+                            </div>
+                            <% if (ev.aiComment) { %>
+                                <div class="res-qa-ai">
+                                    <span class="res-ai-chip">AI Officer</span>
+                                    <span class="res-ai-text">
+                                        <%= ev.aiComment %>
+                                    </span>
+                                </div>
+                                <% } %>
+                                    <% if (aFlags.length> 0) { %>
+                                        <div class="res-qa-flags">
+                                            <% for (var fi=0; fi < aFlags.length; fi++) { %>
+                                                <span class="res-flag-tag">
+                                                    <%= aFlags[fi] %>
+                                                </span>
+                                                <% } %>
+                                        </div>
+                                        <% } %>
+                        </div>
+                        <% } %>
+                </div>
+            </div>
+
+            <!-- ── Actions ───────────────────────────────────────────── -->
+            <div class="res-actions animate-fade-in-up">
+                <% if (typeof isDemo !== 'undefined' && isDemo) { %>
+                    <a href="/demo" class="btn btn-primary btn-lg">&#127908; Try Again (Demo)</a>
+                <% } else { %>
+
+                    <a href="/interview" class="btn btn-primary btn-lg">&#127908; Practice Again</a>
+                    <a href="/dashboard" class="btn btn-ghost btn-lg">&#8592; Dashboard</a>
+                    <a href="/dashboard/analytics" class="btn btn-ghost btn-lg">&#128200; Analytics</a>
+                <% } %>
+            </div>
+
+        </div>
+
+        <style>
+            /* ── Results Page Premium Redesign ──────────────────── */
+            .results-page {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-6);
+                padding-bottom: var(--sp-12);
+            }
+
+            /* Hero */
+            .res-hero {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: var(--sp-8);
+                gap: var(--sp-8);
+                background: linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, rgba(168, 85, 247, 0.04) 100%);
+                border: 1px solid rgba(99, 102, 241, 0.15);
+            }
+
+            .res-hero-left {
+                flex: 1;
+            }
+
+            .res-hero-right {
+                display: flex;
+                align-items: center;
+                gap: var(--sp-8);
+                flex-shrink: 0;
+            }
+
+            .res-country-badge {
+                display: flex;
+                align-items: center;
+                gap: var(--sp-3);
+                margin-bottom: var(--sp-4);
+            }
+
+            .res-flag {
+                font-size: 2.5rem;
+            }
+
+            .res-country-name {
+                font-size: var(--text-xl);
+                font-weight: var(--fw-bold);
+                color: var(--text-primary);
+            }
+
+            .res-visa-type {
+                font-size: var(--text-sm);
+                color: var(--text-muted);
+                margin-top: 2px;
+            }
+
+            .res-title {
+                font-size: var(--text-3xl);
+                font-weight: var(--fw-extrabold);
+                background: linear-gradient(135deg, var(--accent-light), var(--purple));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                margin-bottom: var(--sp-2);
+            }
+
+            .res-date {
+                font-size: var(--text-sm);
+                color: var(--text-muted);
+            }
+
+            /* Verdict badge */
+            .res-verdict {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: var(--sp-2);
+                padding: var(--sp-4) var(--sp-6);
+                border-radius: var(--radius-xl);
+                border: 2px solid;
+                text-align: center;
+                min-width: 130px;
+            }
+
+            .res-verdict-icon {
+                font-size: var(--text-2xl);
+                font-weight: var(--fw-black);
+            }
+
+            .res-verdict-label {
+                font-size: var(--text-xs);
+                font-weight: var(--fw-bold);
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+            }
+
+            .verdict-strong_approval {
+                border-color: #22c55e;
+                color: #22c55e;
+                background: rgba(34, 197, 94, 0.08);
+            }
+
+            .verdict-likely_approved {
+                border-color: #86efac;
+                color: #86efac;
+                background: rgba(134, 239, 172, 0.08);
+            }
+
+            .verdict-borderline {
+                border-color: #f59e0b;
+                color: #f59e0b;
+                background: rgba(245, 158, 11, 0.08);
+            }
+
+            .verdict-likely_rejected {
+                border-color: #fb923c;
+                color: #fb923c;
+                background: rgba(251, 146, 60, 0.08);
+            }
+
+            .verdict-strong_rejection {
+                border-color: #ef4444;
+                color: #ef4444;
+                background: rgba(239, 68, 68, 0.08);
+            }
+
+            .verdict-pending {
+                border-color: #64748b;
+                color: #64748b;
+                background: rgba(100, 116, 139, 0.08);
+            }
+
+            /* Approval ring SVG text */
+            .ring-pct {
+                font-family: var(--font-sans);
+                font-size: 26px;
+                font-weight: 800;
+                fill: var(--text-primary);
+            }
+
+            .ring-label {
+                font-family: var(--font-sans);
+                font-size: 12px;
+                fill: var(--text-muted);
+            }
+
+            /* ── Score cards row ── */
+            .res-scores-row {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                gap: var(--sp-4);
+            }
+
+            .res-score-card {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: var(--sp-2);
+                padding: var(--sp-5) var(--sp-4);
+                text-align: center;
+                transition: var(--transition);
+            }
+
+            .res-score-card:hover {
+                transform: translateY(-3px);
+                box-shadow: var(--shadow-md);
+            }
+
+            .res-score-icon {
+                font-size: 1.4rem;
+                line-height: 1;
+            }
+
+            .score-num-text {
+                font-family: var(--font-sans);
+                font-size: 16px;
+                font-weight: 800;
+                fill: var(--text-primary);
+            }
+
+            .res-score-label {
+                font-size: var(--text-xs);
+                color: var(--text-muted);
+                font-weight: var(--fw-semibold);
+                text-transform: uppercase;
+                letter-spacing: 0.06em;
+            }
+
+            .res-score-bar {
+                width: 100%;
+                height: 3px;
+                background: var(--border);
+                border-radius: 999px;
+                overflow: hidden;
+            }
+
+            .res-score-bar-fill {
+                height: 100%;
+                border-radius: 999px;
+                transition: width 1.2s ease;
+            }
+
+            /* ── Decision grid ── */
+            .res-decision-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: var(--sp-4);
+            }
+
+            .res-panel {
+                padding: var(--sp-6);
+            }
+
+            .res-panel-header {
+                display: flex;
+                align-items: center;
+                gap: var(--sp-3);
+                margin-bottom: var(--sp-4);
+            }
+
+            .res-panel-header h3 {
+                font-size: var(--text-base);
+                font-weight: var(--fw-bold);
+                flex: 1;
+                margin: 0;
+            }
+
+            .res-panel-icon {
+                width: 32px;
+                height: 32px;
+                border-radius: var(--radius);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1rem;
+                flex-shrink: 0;
+            }
+
+            .res-icon-red {
+                background: rgba(239, 68, 68, 0.12);
+                color: #ef4444;
+            }
+
+            .res-icon-green {
+                background: rgba(34, 197, 94, 0.12);
+                color: #22c55e;
+            }
+
+            .res-icon-yellow {
+                background: rgba(245, 158, 11, 0.12);
+                color: #f59e0b;
+            }
+
+            .res-icon-blue {
+                background: rgba(99, 102, 241, 0.12);
+                color: var(--accent);
+            }
+
+            .res-panel-count {
+                font-size: var(--text-xs);
+                font-weight: var(--fw-bold);
+                padding: 2px 8px;
+                border-radius: 999px;
+            }
+
+            .res-count-red {
+                background: rgba(239, 68, 68, 0.1);
+                color: #ef4444;
+            }
+
+            .res-count-green {
+                background: rgba(34, 197, 94, 0.1);
+                color: #22c55e;
+            }
+
+            .res-count-yellow {
+                background: rgba(245, 158, 11, 0.1);
+                color: #f59e0b;
+            }
+
+            /* Lists */
+            .res-list {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-2);
+            }
+
+            .res-list-item {
+                display: flex;
+                align-items: flex-start;
+                gap: var(--sp-2);
+                font-size: var(--text-sm);
+                line-height: 1.5;
+                padding: var(--sp-2) var(--sp-3);
+                border-radius: var(--radius);
+            }
+
+            .res-item-risk {
+                background: rgba(239, 68, 68, 0.06);
+                color: #fca5a5;
+            }
+
+            .res-item-strength {
+                background: rgba(34, 197, 94, 0.06);
+                color: #86efac;
+            }
+
+            .res-item-improve {
+                background: rgba(245, 158, 11, 0.06);
+                color: #fcd34d;
+            }
+
+            .res-dot {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                flex-shrink: 0;
+                margin-top: 6px;
+            }
+
+            .res-dot-red {
+                background: #ef4444;
+            }
+
+            .res-dot-green {
+                background: #22c55e;
+            }
+
+            .res-dot-yellow {
+                background: #f59e0b;
+            }
+
+            .res-empty {
+                display: flex;
+                align-items: center;
+                gap: var(--sp-2);
+                font-size: var(--text-sm);
+                padding: var(--sp-3);
+                border-radius: var(--radius);
+            }
+
+            .res-empty-green {
+                color: #86efac;
+                background: rgba(34, 197, 94, 0.06);
+            }
+
+            .res-empty-icon {
+                font-size: 1.1rem;
+            }
+
+            /* Officer quote */
+            .res-officer-quote {
+                font-size: var(--text-sm);
+                line-height: 1.8;
+                color: var(--text-secondary);
+                font-style: italic;
+                position: relative;
+                padding: var(--sp-4);
+                background: var(--surface);
+                border-radius: var(--radius);
+                border-left: 3px solid var(--accent);
+                margin: 0;
+            }
+
+            .res-quote-mark {
+                color: var(--accent);
+                font-size: 1.4rem;
+                font-weight: var(--fw-black);
+                font-style: normal;
+                line-height: 0;
+                vertical-align: -0.3em;
+            }
+
+            /* ── Q&A Transcript ── */
+            .res-qa-section {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-4);
+            }
+
+            .res-qa-title-row {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .res-section-title {
+                font-size: var(--text-xl);
+                font-weight: var(--fw-bold);
+            }
+
+            .res-qa-count {
+                font-size: var(--text-sm);
+                color: var(--text-muted);
+                background: var(--surface);
+                padding: var(--sp-1) var(--sp-3);
+                border-radius: var(--radius-full);
+                border: 1px solid var(--border);
+            }
+
+            .res-qa-list {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-3);
+            }
+
+            .res-qa-card {
+                padding: var(--sp-5) var(--sp-6);
+                transition: var(--transition);
+            }
+
+            .res-qa-card:hover {
+                border-color: rgba(99, 102, 241, 0.3);
+            }
+
+            .res-qa-head {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: var(--sp-4);
+            }
+
+            .res-qa-num-wrap {
+                display: flex;
+                align-items: center;
+                gap: var(--sp-2);
+            }
+
+            .res-qa-num {
+                background: linear-gradient(135deg, var(--accent), var(--purple));
+                color: #fff;
+                border-radius: var(--radius);
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: var(--text-xs);
+                font-weight: var(--fw-bold);
+                flex-shrink: 0;
+            }
+
+            .res-qa-score-badge {
+                font-size: var(--text-xs);
+                font-weight: var(--fw-bold);
+                padding: 3px 10px;
+                border-radius: 999px;
+            }
+
+            .res-badge-good {
+                background: rgba(34, 197, 94, 0.12);
+                color: #22c55e;
+            }
+
+            .res-badge-ok {
+                background: rgba(245, 158, 11, 0.12);
+                color: #f59e0b;
+            }
+
+            .res-badge-low {
+                background: rgba(239, 68, 68, 0.12);
+                color: #ef4444;
+            }
+
+            .res-qa-mini-scores {
+                display: flex;
+                gap: var(--sp-4);
+            }
+
+            .res-mini-score {
+                font-size: var(--text-xs);
+                color: var(--text-muted);
+            }
+
+            .res-mini-score strong {
+                color: var(--text-secondary);
+                font-weight: var(--fw-semibold);
+            }
+
+            .res-qa-body {
+                display: flex;
+                flex-direction: column;
+                gap: var(--sp-3);
+                margin-bottom: var(--sp-4);
+            }
+
+            .res-qa-question,
+            .res-qa-answer {
+                display: flex;
+                gap: var(--sp-3);
+                align-items: flex-start;
+            }
+
+            .res-qa-q-label,
+            .res-qa-a-label {
+                width: 24px;
+                height: 24px;
+                border-radius: var(--radius-sm);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: var(--text-xs);
+                font-weight: var(--fw-black);
+                flex-shrink: 0;
+                margin-top: 2px;
+            }
+
+            .res-qa-q-label {
+                background: rgba(99, 102, 241, 0.15);
+                color: var(--accent-light);
+                border: 1px solid rgba(99, 102, 241, 0.25);
+            }
+
+            .res-qa-a-label {
+                background: rgba(168, 85, 247, 0.12);
+                color: var(--purple);
+                border: 1px solid rgba(168, 85, 247, 0.2);
+            }
+
+            .res-qa-question p {
+                font-size: var(--text-sm);
+                font-weight: var(--fw-semibold);
+                color: var(--text-primary);
+                line-height: 1.5;
+                margin: 0;
+            }
+
+            .res-qa-answer p {
+                font-size: var(--text-sm);
+                color: var(--text-secondary);
+                line-height: 1.6;
+                margin: 0;
+            }
+
+            .res-qa-ai {
+                display: flex;
+                gap: var(--sp-2);
+                align-items: flex-start;
+                background: rgba(99, 102, 241, 0.06);
+                border: 1px solid rgba(99, 102, 241, 0.15);
+                border-radius: var(--radius);
+                padding: var(--sp-3) var(--sp-4);
+                margin-bottom: var(--sp-2);
+            }
+
+            .res-ai-chip {
+                background: linear-gradient(135deg, var(--accent), var(--purple));
+                color: #fff;
+                font-size: 10px;
+                font-weight: var(--fw-bold);
+                padding: 2px 8px;
+                border-radius: 999px;
+                white-space: nowrap;
+                flex-shrink: 0;
+                margin-top: 2px;
+            }
+
+            .res-ai-text {
+                font-size: var(--text-xs);
+                color: var(--text-secondary);
+                line-height: 1.6;
+                flex: 1;
+            }
+
+            .res-qa-flags {
+                display: flex;
+                flex-wrap: wrap;
+                gap: var(--sp-2);
+            }
+
+            .res-flag-tag {
+                background: rgba(239, 68, 68, 0.08);
+                color: #fca5a5;
+                border: 1px solid rgba(239, 68, 68, 0.15);
+                padding: 2px var(--sp-3);
+                border-radius: 999px;
+                font-size: 11px;
+            }
+
+            /* Actions */
+            .res-actions {
+                display: flex;
+                gap: var(--sp-3);
+                flex-wrap: wrap;
+                padding: var(--sp-4) 0 var(--sp-8);
+            }
+
+            /* Responsive */
+            @media (max-width: 1024px) {
+                .res-scores-row {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+
+                .res-decision-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .res-hero {
+                    flex-direction: column;
+                }
+
+                .res-hero-right {
+                    width: 100%;
+                    justify-content: center;
+                }
+
+                .res-scores-row {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+        </style>

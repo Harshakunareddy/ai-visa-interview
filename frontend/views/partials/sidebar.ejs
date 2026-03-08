@@ -1,0 +1,149 @@
+<% if (typeof isDemo !== 'undefined' && isDemo) { %>
+    <!-- Empty sidebar for demo or just brand -->
+    <div class="sidebar-brand">
+        <div class="brand-link">
+            <div class="brand-icon-sm">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                </svg>
+            </div>
+            <span>AI</span>
+        </div>
+    </div>
+
+<% } else { %>
+<aside class="sidebar" id="sidebar" role="complementary" aria-label="Dashboard navigation">
+    <!-- Brand -->
+    <div class="sidebar-brand">
+        <a href="/" class="brand-link">
+            <div class="brand-icon-sm">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                </svg>
+            </div>
+            <span>AI</span>
+        </a>
+        <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">✕</button>
+    </div>
+
+    <!-- User Card -->
+    <div class="sidebar-user">
+        <div class="user-avatar">
+            <% if (user && user.photoURL) { %>
+                <img src="<%= user.photoURL %>" alt="<%= user.displayName %>" width="44" height="44" />
+                <% } else { %>
+                    <span class="avatar-placeholder">
+                        <%= user ? (user.displayName || user.email || 'U' )[0].toUpperCase() : 'U' %>
+                    </span>
+                    <% } %>
+                        <div class="online-dot"></div>
+        </div>
+        <div class="user-info">
+            <p class="user-name">
+                <%= user ? (user.displayName || 'User' ) : 'Guest' %>
+            </p>
+            <p class="user-plan">
+                <% if (subscription) { %>
+                    <span class="plan-badge plan-<%= subscription.plan %>">
+                        <%= subscription.plan %>
+                    </span>
+                    <% } %>
+            </p>
+        </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="sidebar-nav" role="navigation" aria-label="Sidebar navigation">
+        <ul class="nav-list" role="list">
+            <li class="nav-item">
+                <a href="/dashboard" class="nav-link-sidebar <%= page === 'dashboard' ? 'active' : '' %>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/interview" class="nav-link-sidebar <%= page === 'interview' ? 'active' : '' %>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                    </svg>
+                    <span>New Interview</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/dashboard/analytics" class="nav-link-sidebar <%= page === 'analytics' ? 'active' : '' %>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10" />
+                        <line x1="12" y1="20" x2="12" y2="4" />
+                        <line x1="6" y1="20" x2="6" y2="14" />
+                        <line x1="2" y1="20" x2="22" y2="20" />
+                    </svg>
+                    <span>Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/profile" class="nav-link-sidebar <%= page === 'profile' ? 'active' : '' %>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/subscription" class="nav-link-sidebar <%= page === 'pricing' ? 'active' : '' %>">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                        <line x1="1" y1="10" x2="23" y2="10" />
+                    </svg>
+                    <span>Subscription</span>
+                </a>
+            </li>
+        </ul>
+
+        <!-- Divider -->
+        <div class="nav-divider"></div>
+
+        <ul class="nav-list" role="list">
+            <li class="nav-item">
+                <button class="nav-link-sidebar" id="themeToggleSidebar" aria-label="Toggle theme">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5" />
+                        <line x1="12" y1="1" x2="12" y2="3" />
+                        <line x1="12" y1="21" x2="12" y2="23" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    </svg>
+                    <span>Toggle Theme</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link-sidebar danger" id="logoutBtn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                        <polyline points="16,17 21,12 16,7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    <span>Logout</span>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Subscription CTA -->
+    <% if (subscription && subscription.plan==='free' ) { %>
+        <div class="sidebar-cta">
+            <p class="cta-title">🚀 Upgrade Plan</p>
+            <p class="cta-desc">Unlock unlimited interviews & AI analytics</p>
+            <a href="/subscription" class="btn btn-primary btn-sm btn-full">Upgrade Now</a>
+        </div>
+        <% } %>
+</aside>
+<% } %>
+
+
+<!-- Mobile overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>

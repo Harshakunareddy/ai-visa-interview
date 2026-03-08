@@ -1,0 +1,470 @@
+<!-- INTERVIEW SETUP PAGE -->
+<% layout('layouts/dashboard') %>
+
+    <% if (paywallBlocked) { %>
+        <!-- ── PAYWALL SCREEN ─────────────────────────────────────────────── -->
+        <div class="paywall-screen animate-fade-in">
+            <div class="paywall-card glass-card">
+
+                <!-- Icon -->
+                <div class="paywall-icon-wrap">
+                    <div class="paywall-icon-ring">
+                        <span class="paywall-lock-icon">&#128274;</span>
+                    </div>
+                    <div class="paywall-pulse"></div>
+                </div>
+
+                <!-- Message -->
+                <div class="paywall-text">
+                    <h2>You've Used Your Free Interview</h2>
+                    <p>
+                        Your free plan includes <strong>
+                            <%= interviewsLimit %> interview<%= interviewsLimit !==1 ? 's' : '' %>
+                        </strong>.
+                        You've completed <strong>
+                            <%= interviewsUsed %>
+                        </strong> so far.
+                        Upgrade to keep practising and unlock advanced features.
+                    </p>
+                </div>
+
+                <!-- Stats row -->
+                <div class="paywall-stats">
+                    <div class="paywall-stat">
+                        <div class="paywall-stat-val">
+                            <%= interviewsUsed %>
+                        </div>
+                        <div class="paywall-stat-label">Interviews used</div>
+                    </div>
+                    <div class="paywall-stat-divider"></div>
+                    <div class="paywall-stat">
+                        <div class="paywall-stat-val" style="color:var(--danger)">0</div>
+                        <div class="paywall-stat-label">Remaining</div>
+                    </div>
+                    <div class="paywall-stat-divider"></div>
+                    <div class="paywall-stat">
+                        <div class="paywall-stat-val" style="color:var(--warning)">Free</div>
+                        <div class="paywall-stat-label">Current plan</div>
+                    </div>
+                </div>
+
+                <!-- Feature comparison -->
+                <div class="paywall-features-row">
+                    <div class="pf-col pf-free">
+                        <div class="pf-col-header">
+                            <span class="pf-plan-name">Free</span>
+                            <span class="pf-price">&#8377;0</span>
+                        </div>
+                        <ul class="pf-list">
+                            <li class="pf-item pf-have">&#10003; 1 Interview</li>
+                            <li class="pf-item pf-have">&#10003; Basic AI Evaluation</li>
+                            <li class="pf-item pf-no">&#10005; Unlimited Interviews</li>
+                            <li class="pf-item pf-no">&#10005; Video Recording</li>
+                            <li class="pf-item pf-no">&#10005; Eye Tracking</li>
+                            <li class="pf-item pf-no">&#10005; Advanced Analytics</li>
+                        </ul>
+                    </div>
+                    <div class="pf-col pf-monthly pf-highlight">
+                        <div class="pf-popular-badge">&#11088; Most Popular</div>
+                        <div class="pf-col-header">
+                            <span class="pf-plan-name">Monthly</span>
+                            <span class="pf-price">&#8377;499<small>/mo</small></span>
+                        </div>
+                        <ul class="pf-list">
+                            <li class="pf-item pf-have">&#10003; 30 Interviews/Month</li>
+                            <li class="pf-item pf-have">&#10003; Full AI Evaluation</li>
+                            <li class="pf-item pf-have">&#10003; Video Recording</li>
+                            <li class="pf-item pf-have">&#10003; Eye Contact Tracking</li>
+                            <li class="pf-item pf-have">&#10003; Nervousness Analysis</li>
+                            <li class="pf-item pf-have">&#10003; Advanced Analytics</li>
+                        </ul>
+                    </div>
+                    <div class="pf-col pf-yearly">
+                        <div class="pf-col-header">
+                            <span class="pf-plan-name">Yearly</span>
+                            <span class="pf-price">&#8377;3,999<small>/yr</small></span>
+                        </div>
+                        <ul class="pf-list">
+                            <li class="pf-item pf-have">&#10003; Unlimited Interviews</li>
+                            <li class="pf-item pf-have">&#10003; All Monthly Features</li>
+                            <li class="pf-item pf-have">&#10003; Priority AI Queue</li>
+                            <li class="pf-item pf-have">&#10003; 5 Countries Support</li>
+                            <li class="pf-item pf-have">&#10003; Email Support</li>
+                            <li class="pf-item pf-have">&#10003; Early Access Features</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="paywall-cta">
+                    <a href="/subscription" class="btn btn-primary btn-lg paywall-upgrade-btn">
+                        &#128640; Upgrade Now &rarr;
+                    </a>
+                    <% if (typeof isDemo === 'undefined' || !isDemo) { %>
+                    <a href="/" class="btn btn-ghost btn-lg">
+                        &larr; Back to Home
+                    </a>
+                    <% } %>
+
+
+                </div>
+            </div>
+        </div>
+
+        <% } else { %>
+            <!-- ── NORMAL SETUP SCREEN ──────────────────────────────────────── -->
+            <div class="setup-page">
+                <div class="setup-card glass-card animate-fade-in">
+                    <div class="setup-header">
+                        <h2>&#127908; Configure Your Interview</h2>
+                        <p>Choose your destination country and visa type to start your AI practice session</p>
+                    </div>
+
+                    <input type="hidden" id="isDemoFlag" value="<%= typeof isDemo !== 'undefined' && isDemo ? 'true' : 'false' %>">
+
+
+                    <form id="interviewSetupForm" class="setup-form">
+                        <!-- Country Selection -->
+                        <div class="form-group">
+                            <label class="form-label">&#127758; Target Country</label>
+                            <div class="country-selector">
+                                <% var countries=[ { code:'USA', flag:'&#127482;&#127480;', name:'United States' }, {
+                                    code:'Canada', flag:'&#127464;&#127462;', name:'Canada' }, { code:'UK',
+                                    flag:'&#127468;&#127463;', name:'United Kingdom' }, { code:'Australia',
+                                    flag:'&#127462;&#127482;', name:'Australia' }, { code:'Germany',
+                                    flag:'&#127465;&#127466;', name:'Germany' } ]; %>
+                                    <% for (var ci=0; ci < countries.length; ci++) { var c=countries[ci]; %>
+                                        <label class="country-option">
+                                            <input type="radio" name="targetCountry" value="<%= c.code %>"
+                                                <%=c.code==='USA' ? 'checked' : '' %>>
+                                            <span class="country-label">
+                                                <span class="flag"><%- c.flag %></span>
+                                                <span class="name">
+                                                    <%= c.name %>
+                                                </span>
+                                            </span>
+                                        </label>
+                                        <% } %>
+                            </div>
+                        </div>
+
+                        <!-- Visa Type -->
+                        <div class="form-group">
+                            <label class="form-label">&#128203; Visa Type</label>
+                            <select class="form-select" name="visaType" id="visaTypeSelect">
+                                <option value="Student">Student Visa</option>
+                                <option value="Tourist">Tourist Visa</option>
+                                <option value="Work">Work Visa</option>
+                                <option value="Business">Business Visa</option>
+                                <option value="Family">Family Visa</option>
+                            </select>
+                        </div>
+
+                        <!-- Camera Permission -->
+                        <div class="form-group">
+                            <label class="form-label">&#128248; Camera &amp; Microphone</label>
+                            <div class="permission-box glass-card" id="permissionBox">
+                                <div class="permission-status" id="permissionStatus">
+                                    <div class="perm-icon">&#128274;</div>
+                                    <p>Camera and microphone access needed for eye tracking and speech recognition</p>
+                                    <button type="button" class="btn btn-ghost btn-sm" id="requestPermBtn">Grant
+                                        Access</button>
+                                </div>
+                                <video id="previewVideo" class="preview-video" autoplay muted playsinline
+                                    style="display:none"></video>
+                            </div>
+                        </div>
+
+                        <!-- Interview Info -->
+                        <div class="interview-info-box glass-card">
+                            <div class="info-row">
+                                <span class="info-label">&#9201; Duration:</span>
+                                <span class="info-val">5 minutes</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">&#10067; Questions:</span>
+                                <span class="info-val">8&ndash;12 contextual</span>
+                            </div>
+                            <!-- <div class="info-row">
+                                <span class="info-label">&#129302; AI Model:</span>
+                                <span class="info-val">Google Gemini / Groq</span>
+                            </div> -->
+                            <div class="info-row">
+                                <span class="info-label">&#128202; Evaluation:</span>
+                                <span class="info-val">Confidence, Credibility, Consistency</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg" id="startBtn" disabled>
+                            &#128640; Start Interview &rarr;
+                        </button>
+
+
+                    </form>
+                </div>
+
+                <!-- Tips Card -->
+                <div class="tips-card glass-card animate-fade-in-up">
+                    <h3>&#128161; Interview Tips</h3>
+                    <ul class="tips-list">
+                        <li>&#9989; Sit in a well-lit, quiet area</li>
+                        <li>&#9989; Look directly at the camera (eye contact)</li>
+                        <li>&#9989; Speak clearly and at a natural pace</li>
+                        <li>&#9989; Be consistent with your previous answers</li>
+                        <% if (typeof isDemo === 'undefined' || !isDemo) { %>
+                        <li>&#9989; Have your documents ready for reference</li>
+                        <% } %>
+                        <li>&#10060; Avoid long pauses or hesitations (um, uh)</li>
+
+                    </ul>
+                </div>
+            </div>
+
+
+
+                <style>
+                    /* ── Paywall Screen ─────────────────────────────── */
+                    .paywall-screen {
+                        display: flex;
+                        align-items: flex-start;
+                        justify-content: center;
+                        min-height: 70vh;
+                        padding: var(--sp-6) 0;
+                    }
+
+                    .paywall-card {
+                        width: 100%;
+                        max-width: 860px;
+                        padding: var(--sp-10) var(--sp-10);
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: var(--sp-8);
+                        text-align: center;
+                        background: linear-gradient(135deg, rgba(239, 68, 68, 0.04) 0%, rgba(99, 102, 241, 0.04) 100%);
+                        border: 1px solid rgba(239, 68, 68, 0.12);
+                    }
+
+                    /* Animated icon */
+                    .paywall-icon-wrap {
+                        position: relative;
+                        width: 90px;
+                        height: 90px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+
+                    .paywall-icon-ring {
+                        width: 80px;
+                        height: 80px;
+                        border-radius: 50%;
+                        background: rgba(239, 68, 68, 0.1);
+                        border: 2px solid rgba(239, 68, 68, 0.25);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        z-index: 1;
+                    }
+
+                    .paywall-lock-icon {
+                        font-size: 2.2rem;
+                    }
+
+                    .paywall-pulse {
+                        position: absolute;
+                        inset: -6px;
+                        border-radius: 50%;
+                        border: 2px solid rgba(239, 68, 68, 0.2);
+                        animation: paywallPulse 2s ease infinite;
+                    }
+
+                    @keyframes paywallPulse {
+                        0% {
+                            transform: scale(1);
+                            opacity: 1;
+                        }
+
+                        100% {
+                            transform: scale(1.5);
+                            opacity: 0;
+                        }
+                    }
+
+                    .paywall-text h2 {
+                        font-size: var(--text-2xl);
+                        font-weight: var(--fw-extrabold);
+                        margin-bottom: var(--sp-3);
+                        background: linear-gradient(135deg, #ef4444, #f97316);
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        background-clip: text;
+                    }
+
+                    .paywall-text p {
+                        color: var(--text-secondary);
+                        font-size: var(--text-base);
+                        line-height: 1.7;
+                        max-width: 520px;
+                    }
+
+                    /* Stats */
+                    .paywall-stats {
+                        display: flex;
+                        align-items: center;
+                        gap: 0;
+                        background: var(--surface);
+                        border: 1px solid var(--border);
+                        border-radius: var(--radius-xl);
+                        padding: var(--sp-4) var(--sp-8);
+                        gap: var(--sp-8);
+                    }
+
+                    .paywall-stat {
+                        text-align: center;
+                    }
+
+                    .paywall-stat-val {
+                        font-size: var(--text-2xl);
+                        font-weight: var(--fw-extrabold);
+                        color: var(--text-primary);
+                    }
+
+                    .paywall-stat-label {
+                        font-size: var(--text-xs);
+                        color: var(--text-muted);
+                        text-transform: uppercase;
+                        letter-spacing: 0.06em;
+                        margin-top: 2px;
+                    }
+
+                    .paywall-stat-divider {
+                        width: 1px;
+                        height: 40px;
+                        background: var(--border);
+                    }
+
+                    /* Feature cols */
+                    .paywall-features-row {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr 1fr;
+                        gap: var(--sp-4);
+                        width: 100%;
+                    }
+
+                    .pf-col {
+                        border: 1px solid var(--border);
+                        border-radius: var(--radius-lg);
+                        padding: var(--sp-5);
+                        text-align: left;
+                        position: relative;
+                    }
+
+                    .pf-highlight {
+                        border-color: var(--accent);
+                        background: rgba(99, 102, 241, 0.06);
+                        box-shadow: 0 0 24px rgba(99, 102, 241, 0.12);
+                    }
+
+                    .pf-popular-badge {
+                        position: absolute;
+                        top: -12px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: linear-gradient(135deg, var(--accent), var(--purple));
+                        color: #fff;
+                        font-size: 11px;
+                        font-weight: var(--fw-bold);
+                        padding: 2px 12px;
+                        border-radius: 999px;
+                        white-space: nowrap;
+                    }
+
+                    .pf-col-header {
+                        display: flex;
+                        align-items: baseline;
+                        justify-content: space-between;
+                        margin-bottom: var(--sp-4);
+                        padding-bottom: var(--sp-3);
+                        border-bottom: 1px solid var(--border);
+                    }
+
+                    .pf-plan-name {
+                        font-weight: var(--fw-bold);
+                        font-size: var(--text-base);
+                    }
+
+                    .pf-price {
+                        font-size: var(--text-xl);
+                        font-weight: var(--fw-extrabold);
+                        color: var(--text-primary);
+                    }
+
+                    .pf-price small {
+                        font-size: var(--text-xs);
+                        font-weight: var(--fw-normal);
+                        color: var(--text-muted);
+                    }
+
+                    .pf-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: var(--sp-2);
+                    }
+
+                    .pf-item {
+                        font-size: var(--text-sm);
+                    }
+
+                    .pf-have {
+                        color: var(--text-secondary);
+                    }
+
+                    .pf-no {
+                        color: var(--text-muted);
+                        text-decoration: line-through;
+                        opacity: 0.5;
+                    }
+
+                    /* CTA */
+                    .paywall-cta {
+                        display: flex;
+                        gap: var(--sp-3);
+                        align-items: center;
+                        flex-wrap: wrap;
+                        justify-content: center;
+                    }
+
+                    .paywall-upgrade-btn {
+                        background: linear-gradient(135deg, var(--accent), var(--purple));
+                        border: none;
+                        padding: var(--sp-4) var(--sp-10);
+                        font-size: var(--text-base);
+                        font-weight: var(--fw-bold);
+                        box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+                        transition: transform 0.2s ease, box-shadow 0.2s ease;
+                    }
+
+                    .paywall-upgrade-btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+                    }
+
+                    @media(max-width:768px) {
+                        .paywall-features-row {
+                            grid-template-columns: 1fr;
+                        }
+
+                        .paywall-card {
+                            padding: var(--sp-8) var(--sp-5);
+                        }
+
+                        .paywall-stats {
+                            gap: var(--sp-5);
+                            padding: var(--sp-4);
+                        }
+                    }
+                </style>
+
+                <% } %>

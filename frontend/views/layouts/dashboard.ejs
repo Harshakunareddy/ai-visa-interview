@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        <%= title %>
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="/css/variables.css" />
+    <link rel="stylesheet" href="/css/reset.css" />
+    <link rel="stylesheet" href="/css/main.css" />
+    <link rel="stylesheet" href="/css/components.css" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <link rel="stylesheet" href="/css/sidebar.css" />
+    <link rel="stylesheet" href="/css/animations.css" />
+    <% if (typeof pageCSS !=='undefined' ) { %>
+        <link rel="stylesheet" href="/css/<%= pageCSS %>" />
+        <% } %>
+            <link rel="icon" href="/images/favicon.svg" type="image/svg+xml" />
+            <style>
+                .shell-demo { grid-template-columns: 1fr !important; }
+                .shell-demo .app-main { margin-left: 0 !important; width: 100% !important; }
+                .topbar-demo { padding-left: var(--sp-6) !important; }
+            </style>
+</head>
+
+
+<body>
+    <div class="app-shell <%= isDemo ? 'shell-demo' : '' %>">
+        <%- include('../partials/sidebar') %>
+        <div class="app-main">
+            <%- include('../partials/topbar') %>
+            <main class="app-content">
+                <%- body %>
+            </main>
+        </div>
+    </div>
+
+
+
+    <% if (isFirebaseConfigured) { %>
+        <input type="hidden" id="fb-config-data" value='<%- JSON.stringify(firebaseConfig || {}) %>'>
+        <script>
+            try {
+                window.__fbCfg = JSON.parse(document.getElementById('fb-config-data').value);
+            } catch (e) {
+                console.error('Failed to parse Firebase config:', e);
+                window.__fbCfg = {};
+            }
+        </script>
+        <script type="module">
+            import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+            import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+            try {
+                const app = initializeApp(window.__fbCfg);
+                window.__firebaseAuth = getAuth(app);
+            } catch (err) { console.error('Firebase init failed:', err.message); }
+        </script>
+        <% } %>
+            <script src="/js/theme.js"></script>
+            <script src="/js/dashboard.js"></script>
+            <% if (typeof pageJS !=='undefined' ) { %>
+                <script src="/js/<%= pageJS %>"></script>
+                <% } %>
+</body>
+
+</html>
