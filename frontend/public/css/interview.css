@@ -310,10 +310,11 @@
     display: flex;
     align-items: center;
     gap: var(--sp-3);
+    flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 .btn-mic {
-    padding: var(--sp-2) var(--sp-6);
+    padding: var(--sp-2) var(--sp-4);
     height: 48px;
     border-radius: var(--radius-lg);
     background: var(--surface);
@@ -324,9 +325,9 @@
     justify-content: center;
     gap: var(--sp-2);
     transition: var(--transition);
-    flex-shrink: 0;
+    flex: 1; /* Allow to grow */
     font-weight: var(--fw-bold);
-    min-width: 140px;
+    min-width: 120px;
     cursor: pointer;
 }
 
@@ -935,12 +936,29 @@
         gap: 2px;
     }
 
-    .interview-header .session-info {
-        display: none;
-    }
-
     .answer-textarea {
         min-height: 200px;
+    }
+
+    .answer-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-mic, .btn-answer, #endInterviewBtn {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .answer-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-2);
+    }
+
+    .btn-answer {
+        grid-column: 1 / -1;
+        order: -1; /* Put submit at the top on small mobile */
     }
 }
 
