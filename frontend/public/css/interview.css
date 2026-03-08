@@ -718,8 +718,9 @@
 
 .country-selector {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: var(--sp-4);
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: var(--sp-3);
+    width: 100%;
 }
 
 .country-option {
@@ -843,24 +844,58 @@
 }
 
 @media (max-width: 768px) {
+    .interview-header {
+        padding: var(--sp-3) var(--sp-4);
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+    }
+
     .interview-main {
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr;
+        height: auto;
+        overflow-y: visible;
+    }
+
+    .interview-room {
+        height: auto;
+        overflow-y: auto;
     }
 
     .video-panel {
-        max-height: 300px;
-        overflow: hidden;
-        flex-direction: row;
-        flex-wrap: wrap;
+        max-height: none;
+        overflow: visible;
+        flex-direction: column;
+        padding: var(--sp-3);
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .video-frame {
+        aspect-ratio: 16/9;
+    }
+
+    .conversation-panel {
+        padding: var(--sp-4);
+        overflow: visible;
     }
 
     .setup-page {
         grid-template-columns: 1fr;
+        padding: 0;
+    }
+
+    .setup-card {
+        padding: var(--sp-4);
+    }
+
+    .setup-header h2 {
+        font-size: var(--text-xl);
     }
 
     .scores-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: var(--sp-3);
     }
 
     .decision-grid {
@@ -868,7 +903,44 @@
     }
 
     .country-selector {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .country-label .flag {
+        font-size: 1.5rem;
+    }
+
+    .start-card {
+        padding: var(--sp-6);
+        margin: var(--sp-4);
+    }
+
+    .start-card h2 {
+        font-size: var(--text-xl);
+    }
+
+    #startBtn {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .country-selector {
+        grid-template-columns: 1fr;
+    }
+    
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+    }
+
+    .interview-header .session-info {
+        display: none;
+    }
+
+    .answer-textarea {
+        min-height: 200px;
     }
 }
 

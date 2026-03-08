@@ -1,7 +1,9 @@
 <header class="topbar" role="banner">
+    <% if (typeof isDemo === 'undefined' || !isDemo) { %>
     <button class="topbar-burger" id="sidebarToggle" aria-label="Open sidebar">
         <span></span><span></span><span></span>
     </button>
+    <% } %>
 
     <div class="topbar-title">
         <h1 class="page-heading">

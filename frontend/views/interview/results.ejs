@@ -876,6 +876,9 @@
             @media (max-width: 768px) {
                 .res-hero {
                     flex-direction: column;
+                    text-align: center;
+                    padding: var(--sp-6) var(--sp-4);
+                    gap: var(--sp-6);
                 }
 
                 .res-hero-right {
@@ -885,6 +888,40 @@
 
                 .res-scores-row {
                     grid-template-columns: repeat(2, 1fr);
+                    gap: var(--sp-3);
+                }
+                
+                .res-qa-item {
+                    grid-template-columns: 1fr;
+                    gap: var(--sp-4);
+                }
+                
+                .res-qa-num-col {
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: space-between;
+                    border-right: none;
+                    border-bottom: 1px solid var(--border);
+                    padding-right: 0;
+                    padding-bottom: var(--sp-3);
+                }
+                
+                .res-actions {
+                    justify-content: center;
+                }
+                
+                .res-actions .btn {
+                    width: 100%;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .res-scores-row {
+                    grid-template-columns: 1fr;
+                }
+                
+                .verdict-text {
+                    font-size: var(--text-2xl);
                 }
             }
         </style>
