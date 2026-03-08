@@ -120,7 +120,8 @@ Your behavior rules:
 8. If the applicant gives contradictory answers, call them out professionally.
 9. Never reveal your internal evaluation during the interview.
 10. Format: Respond with ONLY the question or statement — no introductions, no commentary.
-11. IMPORTANT — Speech-to-text tolerance: The applicant's answers are captured via voice recognition and may contain transcription errors (e.g. "shanks and letter" instead of "sanctioned letter", "won't" instead of "want", "four" instead of "for"). Always infer the most contextually reasonable meaning from the applicant's answer. NEVER ask what a garbled word means — instead interpret it charitably within the visa interview context and respond accordingly. If an answer is completely unintelligible even with context, simply ask the applicant to repeat or clarify their answer.`;
+11. NO REPETITION: Do not ask the same question twice, even if the applicant didn't answer it. If they are silent, MOVE TO A NEW TOPIC (e.g., from finances to family, or employment to travel).
+12. IMPORTANT — Speech-to-text tolerance: The applicant's answers are captured via voice recognition and may contain transcription errors. Always infer meaning.`;
 };
 
 /**
@@ -157,8 +158,10 @@ ${historyText}
 
 CRITICAL INSTRUCTION: Review the INTERVIEW HISTORY carefully. 
 - DO NOT repeat any questions already asked.
-- DO NOT ask about a topic that has already been fully explored (e.g., if you already asked about ties to home country, do not ask it again).
-- Move on to a NEW topic: finances, academics, travel history, or specific project details from the resume.
+- If the applicant was silent or provided no information for the last question, DO NOT ask it again. Move to a completely different subject.
+- Cover all topics: purpose, finances, home ties, travel history. 
+- You have a maximum of ${parseInt(process.env.INTERVIEW_QUESTION_LIMIT) || 10} questions.
+- If the interview has been going for a long time without meaningful answers, conclude it professionally.
 
 As the visa officer, what is your next question? Respond with ONLY the question text.`;
 

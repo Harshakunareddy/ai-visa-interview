@@ -146,9 +146,9 @@ function displayQuestion(text, index) {
     questionLoading.style.display = 'none';
     questionText.style.display = 'block';
     questionText.textContent = text;
-    qCounter.textContent = Math.min(index + 1, totalQuestions);
-    progressLabel.textContent = `${Math.min(index + 1, totalQuestions)} / ${totalQuestions} questions`;
-    progressBar.style.width = `${(Math.min(index + 1, totalQuestions) / totalQuestions) * 100}%`;
+    // qCounter.textContent = Math.min(index + 1, totalQuestions);
+    // progressLabel.textContent = `${Math.min(index + 1, totalQuestions)} / ${totalQuestions} questions`;
+    // progressBar.style.width = `${(Math.min(index + 1, totalQuestions) / totalQuestions) * 100}%`;
 
     // Speak question
     speakText(text);
