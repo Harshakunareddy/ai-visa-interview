@@ -7,10 +7,9 @@
         verdictClass=verdict.toLowerCase().replace(/\s+/g,'_'); var scoreItems=[ { label:'Overall', key:'overall',
         icon:'&#9733;', color:'--accent' }, { label:'Confidence', key:'confidence', icon:'&#128170;', color:'--purple'
         }, { label:'Communication', key:'communication', icon:'&#128483;', color:'--cyan' }, { label:'Consistency',
-        key:'consistency', icon:'&#128279;', color:'--warning' } ];
-        if (typeof behavioralFeaturesEnabled !== 'undefined' && behavioralFeaturesEnabled) {
-            scoreItems.push({ label:'Eye Contact', key:'eyeContact', icon:'&#128065;', color:'--success' });
-        } %>
+        key:'consistency', icon:'&#128279;', color:'--warning' } ]; if (typeof behavioralFeaturesEnabled !=='undefined'
+        && behavioralFeaturesEnabled) { scoreItems.push({ label:'Eye Contact', key:'eyeContact', icon:'&#128065;',
+        color:'--success' }); } %>
 
 
 
@@ -46,10 +45,12 @@
                 <div class="res-hero-right">
                     <div class="res-verdict verdict-<%= verdictClass %>">
                         <div class="res-verdict-icon">
-                            <% if (verdictClass==='strong_approval' || verdictClass==='likely_approved' ) { %>&#10003;<% } %>
-                            <% if (verdictClass==='borderline' ) { %>&#8776;<% } %>
-                            <% if (verdictClass==='likely_rejected' || verdictClass==='strong_rejection' ) { %>&#10005;<% } %>
-                            <% if (verdictClass==='pending' ) { %>&#9679;<% } %>
+                            <% if (verdictClass==='strong_approval' || verdictClass==='likely_approved' ) { %>&#10003;<%
+                                    } %>
+                                    <% if (verdictClass==='borderline' ) { %>&#8776;<% } %>
+                                            <% if (verdictClass==='likely_rejected' || verdictClass==='strong_rejection'
+                                                ) { %>&#10005;<% } %>
+                                                    <% if (verdictClass==='pending' ) { %>&#9679;<% } %>
                         </div>
                         <div class="res-verdict-label">
                             <%= verdict %>
@@ -209,22 +210,22 @@
                             <div class="res-qa-head">
                                 <div class="res-qa-num-wrap">
                                     <span class="res-qa-num">Q<%= qi + 1 %></span>
-                                    <% if (typeof isDemo === 'undefined' || !isDemo) { %>
-                                    <span class="res-qa-score-badge res-badge-<%= scoreClass %>">
-                                        <%= avgScore %>/10
-                                    </span>
+                                    <% if (typeof isDemo==='undefined' || !isDemo) { %>
+                                        <span class="res-qa-score-badge res-badge-<%= scoreClass %>">
+                                            <%= avgScore %>/10
+                                        </span>
+                                        <% } %>
+                                </div>
+                                <% if (typeof isDemo==='undefined' || !isDemo) { %>
+                                    <div class="res-qa-mini-scores">
+                                        <span class="res-mini-score">Relevance: <strong>
+                                                <%= rel %>/10
+                                            </strong></span>
+                                        <span class="res-mini-score">Credibility: <strong>
+                                                <%= cred %>/10
+                                            </strong></span>
+                                    </div>
                                     <% } %>
-                                </div>
-                                <% if (typeof isDemo === 'undefined' || !isDemo) { %>
-                                <div class="res-qa-mini-scores">
-                                    <span class="res-mini-score">Relevance: <strong>
-                                            <%= rel %>/10
-                                        </strong></span>
-                                    <span class="res-mini-score">Credibility: <strong>
-                                            <%= cred %>/10
-                                        </strong></span>
-                                </div>
-                                <% } %>
                             </div>
                             <div class="res-qa-body">
                                 <div class="res-qa-question">
@@ -264,14 +265,14 @@
 
             <!-- ── Actions ───────────────────────────────────────────── -->
             <div class="res-actions animate-fade-in-up">
-                <% if (typeof isDemo !== 'undefined' && isDemo) { %>
+                <% if (typeof isDemo !=='undefined' && isDemo) { %>
                     <a href="/demo" class="btn btn-primary btn-lg">&#127908; Try Again (Demo)</a>
-                <% } else { %>
+                    <% } else { %>
 
-                    <a href="/interview" class="btn btn-primary btn-lg">&#127908; Practice Again</a>
-                    <a href="/dashboard" class="btn btn-ghost btn-lg">&#8592; Dashboard</a>
-                    <a href="/dashboard/analytics" class="btn btn-ghost btn-lg">&#128200; Analytics</a>
-                <% } %>
+                        <a href="/interview" class="btn btn-primary btn-lg">&#127908; Practice Again</a>
+                        <a href="/dashboard" class="btn btn-ghost btn-lg">&#8592; Dashboard</a>
+                        <a href="/dashboard/analytics" class="btn btn-ghost btn-lg">&#128200; Analytics</a>
+                        <% } %>
             </div>
 
         </div>

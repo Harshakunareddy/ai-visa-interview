@@ -7,11 +7,9 @@
 const session = window.__session || {};
 const { sessionId, targetCountry, visaType, isDemo, questionLimit } = session;
 
-// ── DOM refs ──────────────────────────────────────────────────
 const startOverlay = document.getElementById('startOverlay');
 const startBtn = document.getElementById('startInterviewBtn');
 const questionBox = document.getElementById('questionBox');
-
 const questionText = document.getElementById('questionText');
 const questionLoading = document.getElementById('questionLoading');
 const qCounter = document.getElementById('qCounter');
@@ -20,7 +18,6 @@ const submitBtn = document.getElementById('submitAnswerBtn');
 const micBtn = document.getElementById('micBtn');
 const micText = document.getElementById('micText');
 const endBtn = document.getElementById('endInterviewBtn');
-
 const timerDisplay = document.getElementById('timerDisplay');
 const timerCircle = document.getElementById('timerCircle');
 const progressBar = document.getElementById('progressBar');
@@ -36,6 +33,10 @@ const eyeVal = document.getElementById('eyeVal');
 const nervFill = document.getElementById('nervFill');
 const nervVal = document.getElementById('nervVal');
 const recIndicator = document.getElementById('recIndicator');
+
+// ── Helpers for Safety ────────────────────────────────────────
+function safeSetText(el, text) { if (el) el.textContent = text; }
+function safeSetStyle(el, prop, val) { if (el) el.style[prop] = val; }
 
 // ── State ─────────────────────────────────────────────────────
 let currentQIndex = 0;
@@ -76,8 +77,12 @@ updateVoices();
 
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
-    if (sessionInfo) sessionInfo.textContent = `${targetCountry || 'Demo'} · ${visaType || 'Visa'}`;
-    if (officerCountry) officerCountry.textContent = `${targetCountry || 'Demo'} Embassy`;
+    console.log('--- Interview Init ---');
+    console.log('Session ID:', sessionId);
+    console.log('Target:', targetCountry);
+
+    safeSetText(sessionInfo, `${targetCountry || 'Demo'} · ${visaType || 'Visa'}`);
+    safeSetText(officerCountry, `${targetCountry || 'Demo'} Embassy`);
 
     // Start camera
     try {
@@ -108,6 +113,7 @@ async function init() {
             throw new Error(data.message);
         }
     } catch (err) {
+        console.error('INTERVIEW INIT ERROR:', err);
         if (!err.message.includes('already completed')) {
             showNotification('Failed to start interview: ' + err.message, 'error');
         }
@@ -127,25 +133,25 @@ function startTimer() {
         }
         const mins = Math.floor(timerSeconds / 60);
         const secs = timerSeconds % 60;
-        timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        safeSetText(timerDisplay, `${mins}:${secs.toString().padStart(2, '0')}`);
 
-        // Update ring
+        const circumference = 2 * Math.PI * 26; // r=26
         const progress = timerSeconds / 300;
         const dashOffset = circumference * (1 - progress);
-        timerCircle.style.strokeDasharray = `${circumference}`;
-        timerCircle.style.strokeDashoffset = dashOffset;
+        safeSetStyle(timerCircle, 'strokeDasharray', `${circumference}`);
+        safeSetStyle(timerCircle, 'strokeDashoffset', dashOffset);
 
         // Color warning
-        if (timerSeconds < 60) timerCircle.style.stroke = '#ef4444';
-        else if (timerSeconds < 120) timerCircle.style.stroke = '#f59e0b';
+        if (timerSeconds < 60) safeSetStyle(timerCircle, 'stroke', '#ef4444');
+        else if (timerSeconds < 120) safeSetStyle(timerCircle, 'stroke', '#f59e0b');
     }, 1000);
 }
 
 // ── Questions ─────────────────────────────────────────────────
 function displayQuestion(text, index) {
-    questionLoading.style.display = 'none';
-    questionText.style.display = 'block';
-    questionText.textContent = text;
+    safeSetStyle(questionLoading, 'display', 'none');
+    safeSetStyle(questionText, 'display', 'block');
+    safeSetText(questionText, text);
     // qCounter.textContent = Math.min(index + 1, totalQuestions);
     // progressLabel.textContent = `${Math.min(index + 1, totalQuestions)} / ${totalQuestions} questions`;
     // progressBar.style.width = `${(Math.min(index + 1, totalQuestions) / totalQuestions) * 100}%`;
@@ -155,8 +161,8 @@ function displayQuestion(text, index) {
 }
 
 function showQuestionLoading() {
-    questionText.style.display = 'none';
-    questionLoading.style.display = 'flex';
+    safeSetStyle(questionText, 'display', 'none');
+    safeSetStyle(questionLoading, 'display', 'flex');
 }
 
 // ── Speech Synthesis ──────────────────────────────────────────
@@ -199,11 +205,11 @@ function speakText(text) {
             
             if (voice) utterance.voice = voice;
 
-            officerSpeaking.style.display = 'flex';
-            utterance.onend = () => { officerSpeaking.style.display = 'none'; };
+            safeSetStyle(officerSpeaking, 'display', 'flex');
+            utterance.onend = () => { safeSetStyle(officerSpeaking, 'display', 'none'); };
             utterance.onerror = (e) => { 
                 console.error('Speech synthesis error:', e);
-                officerSpeaking.style.display = 'none';
+                safeSetStyle(officerSpeaking, 'display', 'none');
                 
                 // If it failed and it's not a permission issue, try one more time with default voice
                 if (e.error === 'synthesis-failed' && !isRetry) {
@@ -245,21 +251,21 @@ function initSpeechRecognition() {
 
     recognition.onstart = () => {
         isRecognizing = true;
-        micBtn.classList.add('recording');
-        micText.textContent = 'Stop Telling';
-        speechStatus.textContent = '🎙️ Listening...';
+        if (micBtn) micBtn.classList.add('recording');
+        safeSetText(micText, 'Stop Telling');
+        safeSetText(speechStatus, '🎙️ Listening...');
         speechStartTime = Date.now();
     };
 
     recognition.onend = () => {
         isRecognizing = false;
-        micBtn.classList.remove('recording');
-        micText.textContent = 'Start Telling';
-        speechStatus.textContent = '';
+        if (micBtn) micBtn.classList.remove('recording');
+        safeSetText(micText, 'Start Telling');
+        safeSetText(speechStatus, '');
         if (Date.now() - speechStartTime > 2000) behavioralData.duration = (Date.now() - speechStartTime) / 1000;
         
         // If they stopped telling, and there's content, let's auto-submit (as requested by user)
-        if (answerTextarea.value.trim().length > 5) {
+        if (answerTextarea && answerTextarea.value.trim().length > 5) {
             submitAnswer();
         }
     };
@@ -271,16 +277,16 @@ function initSpeechRecognition() {
             else interim += e.results[i][0].transcript;
         }
         if (final) {
-            answerTextarea.value += final;
+            if (answerTextarea) answerTextarea.value += final;
             updateWordCount();
         }
-        window._lastInterim = interim; // Save interim to capture it if user stops/submits
-        if (interim) speechStatus.textContent = '🎙️ ' + interim;
+        window._lastInterim = interim; 
+        if (interim) safeSetText(speechStatus, '🎙️ ' + interim);
     };
     recognition.onerror = (e) => {
         isRecognizing = false;
-        micBtn.classList.remove('recording');
-        if (e.error !== 'no-speech') speechStatus.textContent = `Error: ${e.error}`;
+        if (micBtn) micBtn.classList.remove('recording');
+        if (e.error !== 'no-speech') safeSetText(speechStatus, `Error: ${e.error}`);
     };
 }
 
@@ -321,9 +327,9 @@ async function submitAnswer() {
         updateWordCount();
     }
     
-    const answer = normalizeTranscript(answerTextarea.value.trim());
+    const answer = normalizeTranscript(answerTextarea ? answerTextarea.value.trim() : '');
     if (!answer) { 
-        speechStatus.textContent = '⚠️ Please provide an answer'; 
+        safeSetText(speechStatus, '⚠️ Please provide an answer'); 
         isSubmitting = false;
         return; 
     }
@@ -339,7 +345,7 @@ async function submitAnswer() {
     // Disable controls
     disableControls();
     showQuestionLoading();
-    speechStatus.textContent = '⏳ AI is evaluating your answer...';
+    safeSetText(speechStatus, '⏳ AI is evaluating your answer...');
 
     try {
         const res = await apiFetch(`/api/interview/${sessionId}/answer`, {
@@ -366,13 +372,13 @@ async function submitAnswer() {
             behavioralData = { eyeContact: 0, nervousness: 0, blinkRate: 0, pauses: 0, duration: 0 };
             displayQuestion(result.question, currentQIndex);
             enableControls();
-            speechStatus.textContent = '';
+            safeSetText(speechStatus, '');
         }
     } catch (err) {
-        speechStatus.textContent = '⚠️ ' + err.message;
+        safeSetText(speechStatus, '⚠️ ' + err.message);
         enableControls();
-        questionText.style.display = 'block';
-        questionLoading.style.display = 'none';
+        safeSetStyle(questionText, 'display', 'block');
+        safeSetStyle(questionLoading, 'display', 'none');
     } finally {
         isSubmitting = false; // Always release guard
     }
@@ -403,7 +409,7 @@ function initMediaRecorder(stream) {
         mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
         mediaRecorder.start(1000);
-        recIndicator.style.display = 'flex';
+        safeSetStyle(recIndicator, 'display', 'flex');
     } catch (_) { }
 }
 
@@ -512,17 +518,17 @@ document.addEventListener('visibilitychange', () => {
 
 // ── Controls helpers ──────────────────────────────────────────
 function enableControls() {
-    answerTextarea.disabled = false;
-    submitBtn.disabled = false;
-    micBtn.disabled = false;
-    micText.textContent = 'Start Telling';
-    answerTextarea.focus();
+    if (answerTextarea) answerTextarea.disabled = false;
+    if (submitBtn) submitBtn.disabled = false;
+    if (micBtn) micBtn.disabled = false;
+    safeSetText(micText, 'Start Telling');
+    if (answerTextarea) answerTextarea.focus();
 }
 
 function disableControls() {
-    answerTextarea.disabled = true;
-    submitBtn.disabled = true;
-    micBtn.disabled = true;
+    if (answerTextarea) answerTextarea.disabled = true;
+    if (submitBtn) submitBtn.disabled = true;
+    if (micBtn) micBtn.disabled = true;
     if (isRecognizing) recognition?.stop();
 }
 

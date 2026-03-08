@@ -152,12 +152,14 @@
         </div>
     </div>
 
-    <input type="hidden" id="session-data-raw" value='<%- session %>'>
+    <div id="session-data" data-session="<%= session %>"></div>
     <script>
         try {
-            window.__session = JSON.parse(document.getElementById('session-data-raw').value);
-        } catch (e) {
-            console.error('Failed to parse session data:', e);
+            const dataEl = document.getElementById('session-data');
+            window.__session = JSON.parse(dataEl.dataset.session);
+            console.log('Session metadata loaded');
+        } catch (err) {
+            console.error('Session data parse error:', err);
             window.__session = {};
         }
     </script>
