@@ -407,4 +407,13 @@
     .stats-grid {
         grid-template-columns: 1fr;
     }
+    .app-content {
+        padding: var(--sp-4);
+    }
+    .topbar {
+        padding: 0 var(--sp-3);
+    }
+    .page-heading {
+        font-size: var(--text-lg);
+    }
 }

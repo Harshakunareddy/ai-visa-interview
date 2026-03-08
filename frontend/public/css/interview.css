@@ -904,7 +904,7 @@
     }
 
     .country-selector {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
     }
     
     .country-label .flag {
@@ -926,8 +926,8 @@
 }
 
 @media (max-width: 480px) {
-    .country-selector {
-        grid-template-columns: 1fr;
+    .country-label .name {
+        font-size: 10px;
     }
     
     .info-row {
