@@ -142,9 +142,10 @@ const submitAnswer = async (sessionId, userId, { answer, questionIndex, behavior
     }
 
 
-    // Check if interview should end (8–12 questions or time limit)
+    // Check if interview should end (configurable limit, default 10 questions or time limit)
+    const questionLimit = parseInt(process.env.INTERVIEW_QUESTION_LIMIT) || 10;
     const elapsed = (Date.now() - new Date(session.startedAt).getTime()) / 1000;
-    const shouldEnd = session.questionCount >= 10 || elapsed >= session.plannedDuration;
+    const shouldEnd = session.questionCount >= questionLimit || elapsed >= session.plannedDuration;
 
     if (shouldEnd) {
         return await endSession(session, userId, profile, resume);

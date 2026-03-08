@@ -72,7 +72,8 @@ const interviewRoom = asyncHandler(async (req, res, next) => {
             sessionId: session.sessionId, 
             targetCountry: session.targetCountry, 
             visaType: session.visaType,
-            behavioralFeaturesEnabled: process.env.BEHAVIORAL_FEATURES_ENABLED !== 'false'
+            behavioralFeaturesEnabled: process.env.BEHAVIORAL_FEATURES_ENABLED !== 'false',
+            questionLimit: parseInt(process.env.INTERVIEW_QUESTION_LIMIT) || 10
         }),
         sub: req.session?.subscription,
         behavioralFeaturesEnabled: process.env.BEHAVIORAL_FEATURES_ENABLED !== 'false',

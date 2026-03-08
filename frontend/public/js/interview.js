@@ -5,7 +5,7 @@
 'use strict';
 
 const session = window.__session || {};
-const { sessionId, targetCountry, visaType, isDemo } = session;
+const { sessionId, targetCountry, visaType, isDemo, questionLimit } = session;
 
 // ── DOM refs ──────────────────────────────────────────────────
 const startOverlay = document.getElementById('startOverlay');
@@ -39,10 +39,11 @@ const recIndicator = document.getElementById('recIndicator');
 
 // ── State ─────────────────────────────────────────────────────
 let currentQIndex = 0;
-let totalQuestions = 10;
+let totalQuestions = questionLimit || 10;
 let timerSeconds = 300; // 5 min
 let timerInterval = null;
-let isEnding = false; // Flag to suppress navigation warnings
+let isEnding = false; 
+let isSubmitting = false; // Guard for double-submission
 
 let mediaRecorder = null;
 let recordedChunks = [];
@@ -145,9 +146,9 @@ function displayQuestion(text, index) {
     questionLoading.style.display = 'none';
     questionText.style.display = 'block';
     questionText.textContent = text;
-    qCounter.textContent = index + 1;
-    progressLabel.textContent = `${index + 1} / ${totalQuestions} questions`;
-    progressBar.style.width = `${((index + 1) / totalQuestions) * 100}%`;
+    qCounter.textContent = Math.min(index + 1, totalQuestions);
+    progressLabel.textContent = `${Math.min(index + 1, totalQuestions)} / ${totalQuestions} questions`;
+    progressBar.style.width = `${(Math.min(index + 1, totalQuestions) / totalQuestions) * 100}%`;
 
     // Speak question
     speakText(text);
@@ -310,8 +311,15 @@ function normalizeTranscript(text) {
 
 // ── Submit Answer ─────────────────────────────────────────────
 async function submitAnswer() {
+    if (isSubmitting) return; // Prevent overlapping requests
+    
     const answer = normalizeTranscript(answerTextarea.value.trim());
-    if (!answer) { speechStatus.textContent = '⚠️ Please provide an answer'; return; }
+    if (!answer) { 
+        speechStatus.textContent = '⚠️ Please provide an answer'; 
+        return; 
+    }
+
+    isSubmitting = true;
 
     // Collect behavioral data
     behavioralData.eyeContact = eyeScoreAvg;
@@ -342,7 +350,7 @@ async function submitAnswer() {
         } else {
 
 
-            currentQIndex++;
+            currentQIndex = result.questionIndex; // Sync exactly with backend
             answerTextarea.value = '';
             updateWordCount();
             blinkCount = 0; pauseCount = 0;
@@ -356,6 +364,8 @@ async function submitAnswer() {
         enableControls();
         questionText.style.display = 'block';
         questionLoading.style.display = 'none';
+    } finally {
+        isSubmitting = false; // Always release guard
     }
 }
 
